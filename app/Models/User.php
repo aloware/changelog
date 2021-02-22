@@ -40,4 +40,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function company(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'user_id', 'id');
+    }
+
+    public function changelogs(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Changelog::class, 'created_by', 'id');
+    }
 }

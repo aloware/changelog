@@ -13,6 +13,17 @@
         "axios": "^0.21",
         "laravel-mix": "^6.0.6",
         "lodash": "^4.17.19",
-        "postcss": "^8.1.14"
+        "postcss": "^8.1.14",
+        "vue-loader": "^15.9.5",
+        "vue-template-compiler": "^2.6.12"
+    },
+    "dependencies": {
+        "bootstrap": "^4.6.0",
+        "bootstrap-vue": "^2.21.2",
+        "vue": "^2.6.12",
+        "vue-moment": "^4.1.0",
+        "vue-toastr": "^2.1.2",
+        "vuelidate": "^0.7.6",
+        "vuex": "^3.6.2"
     }
 }
