@@ -17,3 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/{project_uuid}/changelogs', [\App\Http\Controllers\ProjectController::class, 'getChangeLogs'])->name('project-changelogs');
+
+Route::get('/company/{company_id}/categories', [\App\Http\Controllers\CategoryController::class, 'getByCompanyId'])->name('company-categories');

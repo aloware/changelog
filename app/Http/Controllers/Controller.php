@@ -10,4 +10,9 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+    public function handleUnauthorizedJsonResponse(): \Illuminate\Http\JsonResponse
+    {
+        return response()->json(['status' => 'error', 'message' => 'This action is unauthorized.']);
+    }
 }

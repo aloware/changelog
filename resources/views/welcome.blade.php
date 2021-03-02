@@ -21,7 +21,7 @@
         </style>
     </head>
     <body class="antialiased">
-        <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center sm:pt-0">
+        <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center sm:pt-0" id="app">
 {{--            <iframe width="1280" height="720" src="https://www.youtube.com/embed/ZipWjkRwV2E" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>--}}
             <div class="cl-container" title="Changelogs">
                     <p>Release Notes</p>
@@ -151,5 +151,6 @@
             }
         </script>
         <script async src="https://cdn.headwayapp.co/widget.js"></script>
+        <script src="{{ mix('js/app.js') }}"></script>
     </body>
 </html>
