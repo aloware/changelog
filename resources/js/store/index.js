@@ -1,12 +1,10 @@
-import Vuex from 'vuex';
 import Vue from 'vue';
-import changelog from "./modules/changelog";
-
+import Vuex from 'vuex';
+import store from "./modules/store";
 Vue.use(Vuex);
 
-
-export default new Vuex.store({
+export default new Vuex.Store({
     modules : {
-        changelog
+        store
     }
 });

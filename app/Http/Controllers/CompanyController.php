@@ -2,22 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Company;
+use App\Http\Requests\CompanyStoreRequest;
+use App\Http\Traits\CreatesCompany;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class CompanyController extends Controller
 {
-    public function store(Request $request)
+    use CreatesCompany;
+
+    public function store(CompanyStoreRequest $request)
     {
-        $company = new Company();
-        $company->name = $request->get('name');
-
-        //TODO mechanism to upload an image/logo and set directory url as value
-        //$company->logo = '';
-
-        $company->save();
+        $company = $this->addCompany($request->validated());
 
         //TODO move this to its proper location, can be in the company created observer or in UserController
         //Do this when implementing user auth

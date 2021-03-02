@@ -2,65 +2,164 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Account;
-use App\Models\Category;
+use App\Http\Requests\ChangelogStoreRequest;
+use App\Http\Traits\CreatesChangelog;
+use App\Models\Project;
 use App\Models\Changelog;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ChangelogController extends Controller
 {
+    use CreatesChangelog;
 
-    public function store(Request $request): \Illuminate\Http\JsonResponse
+    public function index($appName)
     {
-        $changelog = new Changelog();
-        $changelog->title = $request->get('title');
-        $changelog->body = $request->get('body');
+        $project = Project::where('name', $appName)->first();
+        return view('changelog.index')->with('user', Auth::user())->with('project', $project);
+    }
 
-        $category = Category::find($request->get('category_id'));
-        if (!$category) {
-            return response()->json(['status' => 'error', 'message' => 'Unable to find category.']);
-        }
-        $changelog->category_id = $category->id;
-
-        $account = Account::find($request->get('account_id'));
-        if (!$account) {
-            return response()->json(['status' => 'error', 'message' => 'Unable to find account.']);
-        }
-        $changelog->account_id = $account->id;
-
-        if ($request->has('published_at')) {
-            $changelog->published_at = Carbon::parse($request->get('published_at'));
-        }
-
-        $changelog->save();
+    /**
+     *  * @OA\Post (
+     *     path="/project/{projectUuid}/changelogs",
+     *     summary="store project new changelog",
+     *     @OA\Parameter(
+     *     name="projectUuid",
+     *     in="path",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     * ),
+     *     @OA\Parameter(
+     *     name="title",
+     *     in="header",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     * ),
+     *     @OA\Parameter(
+     *     name="body",
+     *     in="header",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     * ),
+     *     @OA\Parameter(
+     *     name="category_id",
+     *     in="header",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     * ),
+     *     @OA\Parameter(
+     *     name="project_id",
+     *     in="header",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     * ),
+     *    @OA\Parameter(
+     *     name="published_at",
+     *     in="header",
+     *     required=false,
+     *     @OA\Schema(type="string")
+     * ),
+     *
+     *     @OA\Response(
+     *          response="200",
+     *          description="success"
+     *     )
+     * )
+     * @param ChangelogStoreRequest $request
+     * @param $projectUuid
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(ChangelogStoreRequest $request, $projectUuid): \Illuminate\Http\JsonResponse
+    {
+        $project = Project::where('uuid', $projectUuid)->first();
+        $changelog = $this->addChangelog($request->validated(), $project->id);
 
         return response()->json(['changelog' => $changelog]);
     }
 
-    public function update($id, Request $request): \Illuminate\Http\JsonResponse
+    /**
+     *  * @OA\Put  (
+     *     path="/project/changelogs/{id}",
+     *     summary="update project changelog",
+     *     @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     * ),
+     *     @OA\Parameter(
+     *     name="title",
+     *     in="header",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     * ),
+     *     @OA\Parameter(
+     *     name="body",
+     *     in="header",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     * ),
+     *     @OA\Parameter(
+     *     name="category_id",
+     *     in="header",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     * ),
+     *     @OA\Parameter(
+     *     name="project_id",
+     *     in="header",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     * ),
+     *    @OA\Parameter(
+     *     name="published_at",
+     *     in="header",
+     *     required=false,
+     *     @OA\Schema(type="string")
+     * ),
+     *
+     *     @OA\Response(
+     *          response="200",
+     *          description="success"
+     *     )
+     * )
+     * @param ChangelogStoreRequest $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(ChangelogStoreRequest $request, $id): \Illuminate\Http\JsonResponse
     {
         $changelog = Changelog::find($id);
-        $changelog->title = $request->get('title');
-        $changelog->body = $request->get('body');
-
-        $category = Category::find($request->get('category_id'));
-        if (!$category) {
-            return response()->json(['status' => 'error', 'message' => 'Unable to find category.']);
+        if (!$changelog) {
+            return response()->json(['status' => 'error', 'message' => 'Unable to find changelog.']);
         }
 
-        $changelog->category_id = $category->id;
-
-        if ($request->has('published_at')) {
-            $changelog->published_at = $request->has('published_at');
+        if (\auth()->user()->can('update', $changelog)) {
+            $changelog = $this->updateChangelog($request->validated(), $changelog);
+            return response()->json(['changelog' => $changelog]);
+        } else {
+            return $this->handleUnauthorizedJsonResponse();
         }
-
-        $changelog->save();
-
-        return response()->json(['changelog' => $changelog]);
     }
 
-    public function delete($id): \Illuminate\Http\JsonResponse
+    /**
+     *  * @OA\Delete (
+     *     path="/project/changelogs/{id}",
+     *     summary="delete specific project changelog",
+     *     @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="success"
+     *     )
+     * )
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy($id): \Illuminate\Http\JsonResponse
     {
         $changelog = Changelog::find($id);
 
@@ -68,9 +167,11 @@ class ChangelogController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unable to find changelog.']);
         }
 
-        //TODO check for soft deletion
-        $changelog->delete();
-
-        return response()->json(['status' => 'success', 'message' => 'Changelog has been successfully deleted.']);
+        if (\auth()->user()->can('delete', $changelog)) {
+            $changelog->delete();
+            return response()->json(['status' => 'success', 'message' => 'Changelog has been successfully deleted.']);
+        } else {
+            return $this->handleUnauthorizedJsonResponse();
+        }
     }
 }

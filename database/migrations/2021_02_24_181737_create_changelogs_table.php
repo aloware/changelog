@@ -15,21 +15,29 @@ class CreateChangelogsTable extends Migration
     {
         Schema::create('changelogs', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('title', 255);
+            $table->string('title');
             $table->text('body');
 
             $table->foreignId('category_id')->constrained('categories')
                 ->onDelete('CASCADE')
-                ->onUpdate('NO ACTION');
-            $table->index('category_id');
+                ->onUpdate('CASCADE');
 
-            $table->foreignId('account_id')->constrained('accounts')
+            $table->foreignId('project_id')->constrained('projects')
                 ->onDelete('CASCADE')
-                ->onUpdate('NO ACTION');
-            $table->index('account_id');
+                ->onUpdate('CASCADE');
+
+            $table->foreignId('created_by')->constrained('users')
+                ->onDelete('CASCADE')
+                ->onUpdate('CASCADE');
+
+            $table->foreignId('updated_by')
+                ->nullable()
+                ->constrained('users')
+                ->onDelete('CASCADE')
+                ->onUpdate('CASCADE');
 
             $table->dateTime('published_at')->nullable();
-
+            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
     }

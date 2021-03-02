@@ -1,5 +1,5 @@
-@extends('layouts.master')
+@extends('layouts.app')
 
 @section('content')
-    <changelogs-component></changelogs-component>
+    <changelogs-component companyId="{{ $user->company->id }}" projectUuid="{{ $project->uuid }}"></changelogs-component>
 @endsection

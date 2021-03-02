@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddCompanyFkToUsers extends Migration
+class CreateCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,15 @@ class AddCompanyFkToUsers extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('company_id')->constrained('companies')
+        Schema::create('categories', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('label');
+            $table->foreignId('company_id')->constrained()
                 ->onDelete('CASCADE')
                 ->onUpdate('NO ACTION');
+            $table->tinyInteger('is_deleted')->nullable();
+            $table->timestamp('deleted_at')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -27,9 +32,6 @@ class AddCompanyFkToUsers extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('company_id');
-            $table->dropForeign('company_id');
-        });
+        Schema::dropIfExists('categories');
     }
 }
