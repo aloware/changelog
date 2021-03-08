@@ -32,4 +32,25 @@ class Category extends Model
     {
         return $this->belongsTo(Company::class, 'company_id', 'id');
     }
+
+    /*
+     * This is temporary as variant is some kind of static as of the moment
+     * Will add an option to select variant/colors later in category handling
+     */
+    public function getVariant(): string
+    {
+        switch ($this->id) {
+            case 2:
+                $variant = 'success';
+                break;
+            case 3:
+                $variant = 'danger';
+                break;
+            case 1 :
+            default:
+                $variant = 'primary';
+        }
+
+        return $variant;
+    }
 }

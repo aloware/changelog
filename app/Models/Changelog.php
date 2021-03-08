@@ -14,6 +14,10 @@ class Changelog extends Model
     const DEFAULT_TITLE = "We're starting a changelog." ;
     const DEFAULT_BODY = "This is your first change log. Below you can make changes, edit and make it public." ;
 
+    protected $casts = [
+        //'published_at' => 'timestamp'
+    ];
+
     public function author(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by', 'id');

@@ -149,7 +149,7 @@
             },
             "delete": {
                 "summary": "delete specific project changelog",
-                "operationId": "App\\Http\\Controllers\\ChangelogController::delete",
+                "operationId": "App\\Http\\Controllers\\ChangelogController::destroy",
                 "parameters": [
                     {
                         "name": "id",
@@ -186,6 +186,35 @@
                         "description": "success"
                     }
                 }
+            }
+        },
+        "/api/{project_uuid}/published/changelogs": {
+            "get": {
+                "summary": "list of project's published changelogs",
+                "operationId": "App\\Http\\Controllers\\ProjectController::getPublishedChangelogs",
+                "parameters": [
+                    {
+                        "name": "projectUuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "uuid": {
+                "description": "A unique identififer for the uploaded file.",
+                "type": "char"
             }
         }
     },

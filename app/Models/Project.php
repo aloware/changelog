@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Ramsey\Uuid\Uuid;
@@ -15,6 +16,8 @@ class Project extends Model
     const TERMINOLOGY_RELEASE_NOTES = 2;
     const TERMINOLOGY_UPDATES = 3;
     const TERMINOLOGY_NEWS = 4;
+
+    const DEFAULT_CHANGELOG_LIST_COUNT = 5;
 
     public $timestamps = false;
 
@@ -56,9 +59,14 @@ class Project extends Model
         return $this->hasMany(Changelog::class, 'project_id', 'id');
     }
 
-    public function getTerminology($id): string
+    public function published(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        switch ($id) {
+        return $this->changelogs()->with('category')->whereDate('published_at', '<=', Carbon::now()->toDateTimeString())->latest('created_at');
+    }
+
+    public function getTerminology(): string
+    {
+        switch ($this->id) {
             case self::TERMINOLOGY_RELEASE_NOTES :
                 $terminology = 'Release Notes';
                 break;

@@ -16,7 +16,7 @@ class CreateChangelogsTable extends Migration
         Schema::create('changelogs', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('title');
-            $table->text('body');
+            $table->longText('body');
 
             $table->foreignId('category_id')->constrained('categories')
                 ->onDelete('CASCADE')

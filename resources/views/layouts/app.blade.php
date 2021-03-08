@@ -7,9 +7,10 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Logbook') }}</title>
+    <title>{{ config('app.name', 'Changelog') }}</title>
 
     <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-vue@1.0.4/image-resize-vue.min.js"></script>
     <script src="{{ asset('js/app.js') }}" defer></script>
 
     <!-- Fonts -->
@@ -29,10 +30,10 @@
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm fixed-top">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
+                    {{ config('app.name', 'Changelog') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -66,8 +67,8 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    @foreach(Auth::user()->company->projects as $project)
-                                        <a class="dropdown-item" href="{{ route('account-changelogs-view', ['app_name' => $project->name]) }}">{{ $project->name }}</a>
+                                    @foreach(Auth::user()->company->projects as $item)
+                                        <a class="dropdown-item @if(isset($project) && $project->id == $item->id) active @endif" href="{{ route('project-changelogs-view', ['app_name' => $item->name]) }}">{{ $item->name }}</a>
                                     @endforeach
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item text-muted" href="{{ route('logout') }}"

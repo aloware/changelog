@@ -16,14 +16,14 @@
             </b-form-group>
 
             <b-form-group id="input-group-comment">
-                <b-form-textarea
-                    id="changelog_body"
-                    v-model="changelog.body"
-                    rows="3"
-                    required
-                ></b-form-textarea>
+                <vue-editor
+                    useCustomImageHandler
+                    :customModules="customModulesForEditor"
+                    :editorOptions="editorSettings"
+                    @image-added="handleImageAdded"
+                    v-model="changelog.body" :editorToolbar="customToolbar">
+                </vue-editor>
             </b-form-group>
-
 
             <b-form-group id="input-group-3" label="Category:" label-for="changelog_category">
                 <b-form-select
@@ -61,13 +61,41 @@
     import { mapActions, mapGetters } from 'vuex'
     import { validationMixin } from 'vuelidate'
     import { required, minLength, maxLength } from 'vuelidate/lib/validators'
+    import { VueEditor } from 'vue2-editor'
+    import { ImageDrop } from 'quill-image-drop-module'
+    import ImageResize from 'quill-image-resize-module'
 
     export default {
         name: "ChangelogFormComponent",
         mixins: [validationMixin],
+        components: {
+            VueEditor
+        },
         data : function(){
             return {
                 is_published : false,
+                customToolbar: [
+                    [{ 'header': [false, 1, 2, 3, 4, 5, 6, ] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{'align': ''}, {'align': 'center'}, {'align': 'right'}, {'align': 'justify'}],
+                    [{ 'indent': '-1'}, { 'indent': '+1' }],
+                    ['blockquote', 'code-block'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ['link', 'image',],
+                    ['clean']
+                ],
+                customModulesForEditor: [
+                    { alias: 'imageDrop', module: ImageDrop },
+                    { alias: 'imageResize', module: ImageResize }
+                ],
+                editorSettings: {
+                    modules: {
+                        imageDrop: true,
+                        imageResize: {
+                            modules: [ 'Resize', 'DisplaySize', 'Toolbar' ]
+                        }
+                    }
+                },
             }
         },
         validations : {
@@ -77,7 +105,9 @@
                 category_id : { required },
             }
         },
-        computed : mapGetters(['categories', 'changelog']),
+        computed : {
+            ...mapGetters(['categories', 'changelog', 'projectuuid']),
+        },
         methods : {
             ...mapActions(['storeChangelog', 'updateChangelog', 'resetChangelog']),
             cancel : function(){
@@ -104,7 +134,19 @@
                     this.$store.dispatch('storeChangelog', { vm : this, changelog : this.changelog });
                     // this.storeChangelog(this.changelog);
                 }
-            }
+            },
+            handleImageAdded : function(file, Editor, cursorLocation, resetUploader){
+                let formData = new FormData();
+                formData.append('image', file);
+                axios.post( '/project/'+ this.projectuuid +'/changelogs/upload/image', formData).then(response => {
+                    let url = response.data.url;
+                    Editor.insertEmbed(cursorLocation, 'image', url);
+                    resetUploader();
+                }).catch(error => {
+                    //TODO handle error here
+                    console.log(error);
+                })
+            },
         }
     }
 </script>
@@ -112,12 +154,22 @@
 <style scoped>
     .editor-container {
         position: fixed;
-        right: 0;
+        right: -1px;
         width: 0;
-        top: 12vh;
+        top: 6vh;
+
+        height: 100%;
+        border-left: 1px solid rgba(0, 0, 0, 0.075);
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding-bottom: 5vh;
     }
 
     .openEditor .editor-container {
-        width: 40vw;
+        width: 48vw;
+    }
+
+    form {
+        padding : 20px;
     }
 </style>

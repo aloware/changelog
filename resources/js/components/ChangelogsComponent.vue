@@ -1,8 +1,9 @@
 <template>
-    <div class="container" v-bind:class="{ openEditor : activeEditor }">
+    <div class="container mt-5" v-bind:class="{ openEditor : activeEditor }">
         <div class="row changelogs-container">
             <div class="col-12">
                 <b-button variant="outline-primary" v-on:click="createChangelog" v-if="!activeEditor">Create Changelog</b-button>
+                <b-link v-bind:href="'/project/' + projectuuid + '/settings'" variant="outline-primary" v-if="!activeEditor">Project Settings</b-link>
                 <hr v-if="!activeEditor">
                 <changelog-component :changelog="changelog" v-if="activeEditor"></changelog-component>
                 <div v-for="(item, index) in changelogs.slice().reverse()" :key="item.id">
@@ -63,7 +64,11 @@ export default {
         font-family: 'Lato', sans-serif;
     }
 
+    .container.openEditor {
+        margin-left: 10px;
+    }
+
     .openEditor .changelogs-container {
-        width: 40vw;
+        width: 50vw;
     }
 </style>

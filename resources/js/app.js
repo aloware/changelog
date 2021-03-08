@@ -10,8 +10,8 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
-import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
-import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
+import VueCtkDateTimePicker from 'vue-ctk-date-time-picker'
+import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css'
 
 import VueToastr from "vue-toastr"
 import moment from 'vue-moment'
@@ -39,6 +39,7 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 Vue.component('changelogs-component', require('./components/ChangelogsComponent.vue').default);
 Vue.component('changelog-component', require('./components/ChangelogComponent.vue').default);
 Vue.component('changelog-form-component', require('./components/ChangelogFormComponent.vue').default);
+Vue.component('published-changelog-component', require('./components/PublishedChangelogsComponent.vue').default);
 Vue.component('VueCtkDateTimePicker', VueCtkDateTimePicker);
 /**
  * Next, we will create a fresh Vue application instance and attach it to

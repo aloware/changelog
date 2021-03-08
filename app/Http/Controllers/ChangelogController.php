@@ -3,14 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangelogStoreRequest;
-use App\Http\Traits\CreatesChangelog;
+use App\Http\Traits\StoresChangelog;
 use App\Models\Project;
 use App\Models\Changelog;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Ramsey\Uuid\Uuid;
 
 class ChangelogController extends Controller
 {
-    use CreatesChangelog;
+    use StoresChangelog;
 
     public function index($appName)
     {

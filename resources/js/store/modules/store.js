@@ -10,7 +10,9 @@ const state = {
         'category' : ''
     },
     activeEditor : false,
-    projectuuid : ''
+    projectuuid : '',
+    project : null,
+    pagination : null
 }
 const getters = {
     categories : (state) => state.categories,
@@ -19,6 +21,7 @@ const getters = {
     activeEditor : (state) => state.activeEditor,
     projectuuid : (state) => state.projectuuid,
     rawChangelog : (state) => state.rawChangelog,
+    pagination : (state) => state.pagination,
 
 }
 const actions = {
@@ -32,9 +35,20 @@ const actions = {
         commit('setChangelogs', response.data);
     },
 
+    async getPublishedChangelogs({commit}, { projectUuid, page }) {
+        let nextPage = (typeof page !== 'undefined') ? '?page=' + page : '';
+        const response = await axios.get("/api/" + projectUuid + "/published/changelogs" + nextPage);
+        if (!page) {
+            commit('setChangelogs', response.data.data);
+        } else {
+            commit('appendChangelogs', response.data.data);
+        }
+
+        commit('setPaginationData', response.data);
+    },
+
     async storeChangelog({commit, state}, { vm, changelog }) {
         const response = await axios.post("/project/" + state.projectuuid + "/changelogs", changelog).catch(function(error){
-            console.log(error.response)
             vm.$toastr.e("Error", Object.values(error.response.data.errors)[0][0]);
         });
         if (typeof response !== 'undefined' && response.status === 200) {
@@ -45,7 +59,6 @@ const actions = {
 
     async updateChangelog({commit, state}, changelog) {
         const response = await axios.put("/project/changelogs/" + changelog.id, changelog);
-        console.log('here');
         if (response.status === 200) {
             commit('resetChangelog');
             commit('updateChangelog', response.data.changelog);
@@ -54,13 +67,18 @@ const actions = {
         }
     },
 
-    async deleteChangelog({commit, state}, changelog, callback) {
+    async deleteChangelog({commit, state}, changelog) {
       const response = await axios.delete("/project/changelogs/" + changelog.id);
       if (response.status === 200 && response.data.status === 'success') {
           commit('deleteChangelog', changelog);
       } else if (response.status === 200 && response.data.status === 'error') {
           return response;
       }
+    },
+
+    setInitialChangelogsData({ commit }, data) {
+        commit('appendChangelogs', data.data);
+        commit('setPaginationData', data);
     },
 
     addChangelog({ commit }) {
@@ -75,7 +93,11 @@ const actions = {
         commit('setEditorVisibility');
     },
     setProjectUuid({commit}, projectuuid) {
-        commit('setProject', projectuuid);
+        commit('setProjectUuid', projectuuid);
+    },
+
+    setProject({commit}, project) {
+        commit('setProject', project);
     },
 
     resetChangelog({commit}) {
@@ -86,6 +108,8 @@ const actions = {
 const mutations = {
     setCategories : (state, categories) => (state.categories = categories),
     setChangelogs : (state, changelogs) => (state.changelogs = changelogs),
+    //this is used more often on pagination
+    appendChangelogs : (state, changelogs) => (state.changelogs = state.changelogs.concat(changelogs)),
     storeChangelog : function(state, changelog) {
         state.changelogs.push(changelog);
     },
@@ -103,24 +127,18 @@ const mutations = {
             }
         }
     },
+
     addChangelog : function(state){
         state.activeEditor = true;
     },
-
     editChangelog : function(state, changelog){
         state.changelog = changelog;
         state.activeEditor = true;
     },
 
     setEditorVisibility : (state) => (state.activeEditor = !state.activeEditor),
-    setProject : (state, projectuuid) => (state.projectuuid = projectuuid),
-    removeTemporaryChangelog : function(state){
-        for (let i = 0; i < state.changelogs.length; i++) {
-            if (state.changelogs[i].temp === true) {
-                state.changelogs.splice(i, 1);
-            }
-        }
-    },
+    setProjectUuid : (state, projectuuid) => (state.projectuuid = projectuuid),
+    setProject : (state, project) => (state.project = project),
     resetChangelog : function(state) {
         state.activeEditor = false;
         state.changelog = {
@@ -128,12 +146,15 @@ const mutations = {
             'title' : 'Title',
             'body' : 'Content',
             'published_at' : '',
-            'category' : ''
+            'category' : '',
+            'is_published' : false
         };
+    },
+    setPaginationData : function(state, data) {
+        delete data.data;
+        state.pagination = data;
     }
 }
-
-
 
 export default {
     state,

@@ -22,11 +22,9 @@
     </head>
     <body class="antialiased">
         <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center sm:pt-0" id="app">
-{{--            <iframe width="1280" height="720" src="https://www.youtube.com/embed/ZipWjkRwV2E" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>--}}
-            <div class="cl-container" title="Changelogs">
-                    <p>Release Notes</p>
-            </div>
+             <div class="hw-container" title="Changelogs">
 
+            </div>
             @if (Route::has('login'))
                 <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
                     @auth
@@ -49,6 +47,8 @@
                         </g>
                     </svg>
                 </div>
+
+                <div class="cl-container" title="Changelogs" style="color: white;"> </div>
 
                 <div class="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg">
                     <div class="grid grid-cols-1 md:grid-cols-2">
@@ -135,22 +135,33 @@
         </div>
         <script>
             // @see https://docs.headwayapp.co/widget for more configuration options.
-            var HW_config = {
-                selector: ".cl-container", // CSS selector where to inject the badge
-                account:  "7LZGzy",
-                translations: {
-                    title: "The Changelog",
-                    readMore: "Read more",
-                    labels: {
-                        "new": "News",
-                        "improvement": "Updates",
-                        "fix": "Fixes"
-                    },
-                    footer: "Read more 👉"
+            // var HW_config = {
+            //     selector: ".hw-container", // CSS selector where to inject the badge
+            //     account:  "7Qbl5J",
+            //     translations: {
+            //         title: "The Changelog",
+            //         readMore: "Read more",
+            //         labels: {
+            //             "new": "News",
+            //             "improvement": "Updates",
+            //             "fix": "Fixes"
+            //         },
+            //         footer: "Read more 👉"
+            //     }
+            // }
+
+            let changelog_config = {
+                container : '.cl-container',
+                uuid : 'a6cf9fe1-cb40-4d2c-b6ae-612148d6c780',
+                translations : {
+                    placeholderLabel : 'Release Notes',
+                    position : 'cl_bottom'
                 }
             }
         </script>
-        <script async src="https://cdn.headwayapp.co/widget.js"></script>
+{{--        <script async src="https://cdn.headwayapp.co/widget.js"></script>--}}
+        <script async src="http://localhost/js/widget.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-vue@1.0.4/image-resize-vue.min.js"></script>
         <script src="{{ mix('js/app.js') }}"></script>
     </body>
 </html>
