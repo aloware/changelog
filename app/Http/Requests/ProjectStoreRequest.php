@@ -14,7 +14,7 @@ class ProjectStoreRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -29,13 +29,18 @@ class ProjectStoreRequest extends FormRequest
         $user = $this->user();
 
         return [
-            'name' => 'required|unique:projects',
+            'name' => [
+                'required',
+                Rule::unique('projects')->ignore($user->company->id, 'company_id')
+            ],
             'company_id' => [
                 'integer',
-                Rule::exists('companies', 'id')->where('company_id', $user->company->id)
+                'exists:companies,id'
             ],
-            'logo' => 'string',
+            //'logo' => 'string',
             'url' => 'string',
+            'page_entry_limit' => 'integer',
+            'widget_entry_limit' => 'integer',
             'terminology' => [
                 'integer',
                 Rule::in([ Project::TERMINOLOGY_CHANGELOG, Project::TERMINOLOGY_RELEASE_NOTES, Project::TERMINOLOGY_UPDATES, Project::TERMINOLOGY_NEWS ])

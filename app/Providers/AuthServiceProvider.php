@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Category;
 use App\Models\Changelog;
+use App\Models\Project;
+use App\Policies\CategoryPolicy;
 use App\Policies\ChangelogPolicy;
+use App\Policies\ProjectPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -16,7 +20,9 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         // 'App\Models\Model' => 'App\Policies\ModelPolicy',
-        Changelog::class => ChangelogPolicy::class
+        Changelog::class => ChangelogPolicy::class,
+        Category::class => CategoryPolicy::class,
+        Project::class => ProjectPolicy::class,
     ];
 
     /**

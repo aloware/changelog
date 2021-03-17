@@ -18,6 +18,12 @@ class ProjectPolicy
     {
         //
     }
+
+    public function authorize(): bool
+    {
+        return true;
+    }
+
     public function store(): bool
     {
         return true;

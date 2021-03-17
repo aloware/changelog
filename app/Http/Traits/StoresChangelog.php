@@ -8,7 +8,7 @@ use App\Models\Changelog;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
-trait CreatesChangelog
+trait StoresChangelog
 {
     public function addChangelog($data, $projectId): Changelog
     {

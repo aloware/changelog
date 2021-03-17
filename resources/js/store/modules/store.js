@@ -9,16 +9,28 @@ const state = {
         'published_at' : '',
         'category' : ''
     },
-    activeEditor : false,
-    projectuuid : ''
+    _beforeEditingChangelogCache : null,
+    category : null,
+    _beforeEditingCategoryCache : null,
+    showChangelogEditor : false,
+    showCategoryEditor : false,
+    projectuuid : '',
+    project : null,
+    pagination : null
 }
 const getters = {
     categories : (state) => state.categories,
+    category : (state) => state.category,
+    _beforeEditingCategoryCache : (state) => state._beforeEditingCategoryCache,
+    _beforeEditingChangelogCache : (state) => state._beforeEditingChangelogCache,
     changelogs : (state) => state.changelogs,
     changelog : (state) => state.changelog,
-    activeEditor : (state) => state.activeEditor,
+    showChangelogEditor : (state) => state.showChangelogEditor,
     projectuuid : (state) => state.projectuuid,
+    project : (state) => state.project,
     rawChangelog : (state) => state.rawChangelog,
+    pagination : (state) => state.pagination,
+    showCategoryEditor : (state) => state.showCategoryEditor,
 
 }
 const actions = {
@@ -32,20 +44,33 @@ const actions = {
         commit('setChangelogs', response.data);
     },
 
-    async storeChangelog({commit, state}, { vm, changelog }) {
-        const response = await axios.post("/project/" + state.projectuuid + "/changelogs", changelog).catch(function(error){
-            console.log(error.response)
-            vm.$toastr.e("Error", Object.values(error.response.data.errors)[0][0]);
-        });
+    async getPublishedChangelogs({commit}, { vm,  projectUuid, page }) {
+        let nextPage = (typeof page !== 'undefined') ? '?page=' + page : '';
+        const response = await axios.get("/api/" + projectUuid + "/published/changelogs" + nextPage);
+        vm.loading = false
+        if (!page) {
+            commit('setChangelogs', response.data.data);
+        } else {
+            commit('appendChangelogs', response.data.data);
+        }
+
+        commit('setPaginationData', response.data);
+    },
+
+    async storeChangelog({commit, state}, changelog) {
+        changelog.category_id = changelog.category.id
+        const response = await axios.post("/project/" + state.project.uuid + "/changelogs", changelog);
         if (typeof response !== 'undefined' && response.status === 200) {
             commit('resetChangelog');
             commit('storeChangelog', response.data.changelog);
+        } else if (response.status === 200 && response.data.status === 'error') {
+            return response;
         }
     },
 
     async updateChangelog({commit, state}, changelog) {
+        changelog.category_id = changelog.category.id
         const response = await axios.put("/project/changelogs/" + changelog.id, changelog);
-        console.log('here');
         if (response.status === 200) {
             commit('resetChangelog');
             commit('updateChangelog', response.data.changelog);
@@ -54,13 +79,18 @@ const actions = {
         }
     },
 
-    async deleteChangelog({commit, state}, changelog, callback) {
-      const response = await axios.delete("/project/changelogs/" + changelog.id);
-      if (response.status === 200 && response.data.status === 'success') {
+    async deleteChangelog({commit, state}, changelog) {
+        const response = await axios.delete("/project/changelogs/" + changelog.id);
+        if (response.status === 200 && response.data.status === 'success') {
           commit('deleteChangelog', changelog);
-      } else if (response.status === 200 && response.data.status === 'error') {
+        } else if (response.status === 200 && response.data.status === 'error') {
           return response;
-      }
+        }
+    },
+
+    setInitialChangelogsData({ commit }, data) {
+        commit('appendChangelogs', data.data);
+        commit('setPaginationData', data);
     },
 
     addChangelog({ commit }) {
@@ -75,17 +105,56 @@ const actions = {
         commit('setEditorVisibility');
     },
     setProjectUuid({commit}, projectuuid) {
-        commit('setProject', projectuuid);
+        commit('setProjectUuid', projectuuid);
+    },
+
+    setProject({commit}, project) {
+        commit('setProject', project);
     },
 
     resetChangelog({commit}) {
         commit('resetChangelog');
-    }
+    },
+
+    async storeCategory({commit, state}, category) {
+        const response = await axios.post("/company/"+ category.company_id +"/category", category);
+        if (typeof response !== 'undefined' && response.status === 200) {
+            commit('resetCategoryData');
+            commit('appendCategory', response.data.category);
+        } else if (response.status === 200 && response.data.status === 'error') {
+            return response;
+        }
+    },
+
+    async updateCategory({commit, state}, category) {
+        const response = await axios.put("/company/category/" + category.id, category);
+        if (response.status === 200) {
+            commit('resetCategoryData');
+            commit('updateCategory', response.data.changelog);
+        } else if (response.status === 200 && response.data.status === 'error') {
+            return response;
+        }
+    },
+
+    async deleteCategory({commit, state}, { vm, category }) {
+        const response = await axios.delete("/company/category/" + category.id);
+        if (response.status === 200 && response.data.status === 'success') {
+            commit('deleteCategory', category);
+            vm.deletionInProgress = !1;
+        } else if (response.status === 200 && response.data.status === 'error') {
+            vm.$toastr.e("Error", response.data.message);
+            vm.deletionInProgress = !1;
+        }
+    },
 }
 
 const mutations = {
-    setCategories : (state, categories) => (state.categories = categories),
+    setCategories : (state, categories) => {
+        state.categories = categories
+    },
     setChangelogs : (state, changelogs) => (state.changelogs = changelogs),
+    //this is used more often on pagination
+    appendChangelogs : (state, changelogs) => (state.changelogs = state.changelogs.concat(changelogs)),
     storeChangelog : function(state, changelog) {
         state.changelogs.push(changelog);
     },
@@ -93,6 +162,7 @@ const mutations = {
         for (let i = 0; i < state.changelogs.length; i++) {
             if (state.changelogs[i].id === changelog.id) {
                 state.changelogs[i] =  changelog;
+                break;
             }
         }
     },
@@ -100,40 +170,116 @@ const mutations = {
         for (let i = 0; i < state.changelogs.length; i++) {
             if (state.changelogs[i].id === changelog.id) {
                 state.changelogs.splice(i, 1);
+                break;
             }
         }
     },
-    addChangelog : function(state){
-        state.activeEditor = true;
-    },
 
+    addChangelog : function(state){
+        state.showChangelogEditor = true;
+    },
     editChangelog : function(state, changelog){
         state.changelog = changelog;
-        state.activeEditor = true;
-    },
-
-    setEditorVisibility : (state) => (state.activeEditor = !state.activeEditor),
-    setProject : (state, projectuuid) => (state.projectuuid = projectuuid),
-    removeTemporaryChangelog : function(state){
         for (let i = 0; i < state.changelogs.length; i++) {
-            if (state.changelogs[i].temp === true) {
-                state.changelogs.splice(i, 1);
+            if (state.changelogs[i].id === changelog.id) {
+                state.changelog = state.changelogs[i]
+                state._beforeEditingChangelogCache = Object.assign({}, state.changelogs[i])
+                break
             }
         }
+
+
+        state.showChangelogEditor = !0;
     },
+
+    setEditorVisibility : (state) => (state.showChangelogEditor = !state.showChangelogEditor),
+    setProjectUuid : (state, projectuuid) => (state.projectuuid = projectuuid),
+    setProject : (state, project) => (state.project = project),
     resetChangelog : function(state) {
-        state.activeEditor = false;
+        state.showChangelogEditor = false;
         state.changelog = {
             'id' : null,
             'title' : 'Title',
             'body' : 'Content',
             'published_at' : '',
-            'category' : ''
+            'category' : '',
+            'is_published' : false
         };
+
+        if (state._beforeEditingChangelogCache) {
+            for (let i = 0; i < state.changelogs.length; i++) {
+                if (state.changelogs[i].id === state._beforeEditingChangelogCache.id) {
+                    Object.assign(state.changelogs[i], state._beforeEditingChangelogCache);
+                    state._beforeEditingChangelogCache = null
+                    break
+                }
+            }
+        }
+    },
+    setPaginationData : function(state, data) {
+        delete data.data;
+        state.pagination = data;
+    },
+
+    appendCategory : function(state, category) {
+        state.categories.push(category)
+    },
+
+    updateCategory : function(state, category){
+        for (let i = 0; i < state.categories.length; i++) {
+            if (state.categories[i].id === category.id) {
+                state.categories[i] =  category;
+                break;
+            }
+        }
+    },
+
+    addCategory :  function(state) {
+        state.category = {
+            label : 'New Category',
+            bg_color : '#007bff',
+            text_color : '#fff',
+        }
+    },
+
+    editCategory : function (state, category) {
+        for (let i = 0; i < state.categories.length; i++) {
+            if (state.categories[i].id === category.id) {
+                state.category = state.categories[i]
+                state._beforeEditingCategoryCache = Object.assign({}, state.categories[i])
+                break
+            }
+        }
+    },
+
+    deleteCategory : function(state, category) {
+        for (let i = 0; i < state.categories.length; i++) {
+            if (state.categories[i].id === category.id) {
+                state.categories.splice(i, 1);
+                break;
+            }
+        }
+    },
+
+    toggleCategoryEditor : (state) => (state.showCategoryEditor = !state.showCategoryEditor),
+    cancelCategoryForm : (state) => {
+        state.category = null;
+        state.showCategoryEditor = !state.showCategoryEditor
+        if (state._beforeEditingCategoryCache) {
+            for (let i = 0; i < state.categories.length; i++) {
+                if (state.categories[i].id === state._beforeEditingCategoryCache.id) {
+                    Object.assign(state.categories[i], state._beforeEditingCategoryCache);
+                    state._beforeEditingCategoryCache = null
+                    break
+                }
+            }
+        }
+    },
+    resetCategoryData : function(state){
+        state.category = state._beforeEditingCategoryCache = null;
+        state.showCategoryEditor = !1
     }
 }
-
-
 
 export default {
     state,

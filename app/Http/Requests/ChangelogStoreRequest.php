@@ -38,7 +38,8 @@ class ChangelogStoreRequest extends FormRequest
             'project_id' => [
                 'integer',
                 Rule::exists('projects', 'id')->where('company_id', $user->company->id)
-            ]
+            ],
+            'published_at' => 'date|nullable'
         ];
     }
 }

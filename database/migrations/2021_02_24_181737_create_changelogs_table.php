@@ -16,7 +16,7 @@ class CreateChangelogsTable extends Migration
         Schema::create('changelogs', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('title');
-            $table->text('body');
+            $table->longText('body');
 
             $table->foreignId('category_id')->constrained('categories')
                 ->onDelete('CASCADE')
@@ -36,7 +36,7 @@ class CreateChangelogsTable extends Migration
                 ->onDelete('CASCADE')
                 ->onUpdate('CASCADE');
 
-            $table->dateTime('published_at')->nullable();
+            $table->date('published_at')->nullable();
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });

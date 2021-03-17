@@ -3,18 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangelogStoreRequest;
-use App\Http\Traits\CreatesChangelog;
+use App\Http\Traits\StoresChangelog;
 use App\Models\Project;
 use App\Models\Changelog;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Ramsey\Uuid\Uuid;
 
 class ChangelogController extends Controller
 {
-    use CreatesChangelog;
+    use StoresChangelog;
 
-    public function index($appName)
+    public function index($slug)
     {
-        $project = Project::where('name', $appName)->first();
+        $project = Project::where('slug', $slug)->first();
         return view('changelog.index')->with('user', Auth::user())->with('project', $project);
     }
 
@@ -72,8 +75,8 @@ class ChangelogController extends Controller
     {
         $project = Project::where('uuid', $projectUuid)->first();
         $changelog = $this->addChangelog($request->validated(), $project->id);
-
-        return response()->json(['changelog' => $changelog]);
+        //do i really need to requery to attach category and project relationship?
+        return response()->json(['changelog' => Changelog::with('category')->with('project')->where('id', $changelog->id)->first()]);
     }
 
     /**
@@ -135,7 +138,8 @@ class ChangelogController extends Controller
 
         if (\auth()->user()->can('update', $changelog)) {
             $changelog = $this->updateChangelog($request->validated(), $changelog);
-            return response()->json(['changelog' => $changelog]);
+
+            return response()->json(['changelog' => Changelog::with('category')->with('project')->where('id', $changelog->id)->first()]);
         } else {
             return $this->handleUnauthorizedJsonResponse();
         }

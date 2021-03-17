@@ -20,4 +20,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get('/{project_uuid}/changelogs', [\App\Http\Controllers\ProjectController::class, 'getChangeLogs'])->name('project-changelogs');
 
+Route::get('/{project_uuid}/published/changelogs', [\App\Http\Controllers\ProjectController::class, 'getPublishedChangelogs'])->name('project-published-changelogs');
+
 Route::get('/company/{company_id}/categories', [\App\Http\Controllers\CategoryController::class, 'getByCompanyId'])->name('company-categories');
+
+Route::get('/project/changelog/image/{filename}', [\App\Http\Controllers\ProjectController::class, 'getImage']);
+
+Route::get('/project/{uuid}/logo', [\App\Http\Controllers\ProjectController::class, 'getLogo'])->name('project-logo');

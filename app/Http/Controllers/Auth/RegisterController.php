@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CompanyStoreRequest;
 use App\Http\Traits\CreatesProject;
-use App\Http\Traits\CreatesChangelog;
+use App\Http\Traits\StoresChangelog;
 use App\Http\Traits\CreatesCompany;
 use App\Models\Category;
 use App\Models\Project;
@@ -35,7 +35,7 @@ class RegisterController extends Controller
     use RegistersUsers;
     use CreatesCompany;
     use CreatesProject;
-    use CreatesChangelog;
+    use StoresChangelog;
     /**
      * Where to redirect users after registration.
      *
@@ -97,14 +97,20 @@ class RegisterController extends Controller
             [
                 'label' => 'New',
                 'company_id' => $company->id,
+                'bg_color' => '#007bff',
+                'text_color' => '#fff'
             ],
             [
                 'label' => 'Improvement',
                 'company_id' => $company->id,
+                'bg_color' => '#28a745',
+                'text_color' => '#fff'
             ],
             [
                 'label' => 'Fix',
                 'company_id' => $company->id,
+                'bg_color' => '#ffc107',
+                'text_color' => '#fff'
             ]
         ];
 

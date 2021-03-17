@@ -32,4 +32,15 @@ class Company extends Model
     {
         return $this->hasMany(Category::class, 'company_id', 'id');
     }
+
+    public function getChangelogsCount(): int
+    {
+        $count = 0;
+
+        foreach ($this->projects as $key => $project) {
+            $count+= $project->changelogs->count();
+        }
+
+        return $count;
+    }
 }

@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('css')
+
+@endsection
+
 @section('content')
-    <changelogs-component companyId="{{ $user->company->id }}" projectUuid="{{ $project->uuid }}"></changelogs-component>
+    <changelogs-component unparsed_project="{{ $project }}"></changelogs-component>
 @endsection
