@@ -156,7 +156,7 @@
 
             let changelog_config = {
                 container : '.cl-container', //optional - insert to the DOM - body
-                uuid : 'ccd41c3c-46c9-47d0-80a0-63621ca16da6',
+                uuid : '78b89a57-b805-401d-8f62-de9668a8a968',
                 translations : {
                     placeholderLabel : '', //link element
                     headerLabel : 'Latest News'

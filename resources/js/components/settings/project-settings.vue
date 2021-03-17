@@ -162,7 +162,7 @@ export default {
 
             axios.post('/company/'+ this.company_id +'/project/new', this.project).then(response => {
                 if (response.data.status === 'success') {
-                    window.location.href = '/projects/' + response.data.project.name + '/changelogs'
+                    window.location.href = '/projects/' + response.data.project.slug + '/changelogs'
                 } else {
                     this.$toastr.e("Error", response.data.message);
                 }

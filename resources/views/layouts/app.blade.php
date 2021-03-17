@@ -107,6 +107,8 @@
                                         <a class="dropdown-item @if(isset($project) && $project->id == $item->id) active @endif" href="{{ route('project-changelogs-view', ['slug' => $item->slug]) }}">{{ $item->name }}</a>
                                     @endforeach
                                     <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="{{ route('create-project', ['id' => Auth::user()->company->id]) }}">New Project</a>
+                                    <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{{ route('categories', ['companyId' => Auth::user()->company->id]) }}">Categories</a>
 {{--                                    <a class="dropdown-item" href="{{ route('project-changelogs-view', ['app_name' => $item->name]) }}">Settings</a>--}}
                                     <div class="dropdown-divider"></div>
