@@ -21,7 +21,7 @@
         </style>
     </head>
     <body class="antialiased">
-        <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center sm:pt-0" id="app">
+        <div class="relative flex items-top justify-center min-h-screen sm:items-center sm:pt-0" id="app">
              <div class="hw-container" title="Changelogs">
 
             </div>
@@ -48,7 +48,10 @@
                     </svg>
                 </div>
 
-                <div class="cl-container" title="Changelogs" style="color: white;"> </div>
+
+                <div class="cl-container" title="Changelogs">
+                    <font-awesome-icon :icon="['fas', 'bell']" />
+                </div>
 
                 <div class="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg">
                     <div class="grid grid-cols-1 md:grid-cols-2">
@@ -135,28 +138,30 @@
         </div>
         <script>
             // @see https://docs.headwayapp.co/widget for more configuration options.
-            // var HW_config = {
-            //     selector: ".hw-container", // CSS selector where to inject the badge
-            //     account:  "7Qbl5J",
-            //     translations: {
-            //         title: "The Changelog",
-            //         readMore: "Read more",
-            //         labels: {
-            //             "new": "News",
-            //             "improvement": "Updates",
-            //             "fix": "Fixes"
-            //         },
-            //         footer: "Read more 👉"
-            //     }
-            // }
+            var HW_config = {
+                selector: ".hw-container", // CSS selector where to inject the badge
+                account:  "7Qbl5J",
+                translations: {
+                    title: "The Changelog",
+                    readMore: "Read more",
+                    labels: {
+                        "new": "News",
+                        "improvement": "Updates",
+                        "fix": "Fixes"
+                    },
+                    footer: "Read more 👉"
+                },
+                //trigger : '.fa-bell'
+            }
 
             let changelog_config = {
-                container : '.cl-container',
-                uuid : 'a6cf9fe1-cb40-4d2c-b6ae-612148d6c780',
+                container : '.cl-container', //optional - insert to the DOM - body
+                uuid : 'ccd41c3c-46c9-47d0-80a0-63621ca16da6',
                 translations : {
-                    placeholderLabel : 'Release Notes',
-                    position : 'cl_bottom'
-                }
+                    placeholderLabel : '', //link element
+                    headerLabel : 'Latest News'
+                },
+                triggerElement : '.fa-bell'
             }
         </script>
 {{--        <script async src="https://cdn.headwayapp.co/widget.js"></script>--}}

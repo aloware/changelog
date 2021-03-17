@@ -4,15 +4,16 @@
             <div class="col-12" v-for="(changelog, index) in changelogs" :key="changelog.id">
                 <h5>{{ changelog.title }}</h5>
                 <p>
-                    <b-badge variant="primary">{{ changelog.category.label }}</b-badge>
-                    <span class="text-muted d-md-none inline-date changelog-date">{{ changelog.created_at | moment('from', 'now') }}</span>
+                    <b-badge v-bind:style="{ backgroundColor : changelog.category.bg_color, color : changelog.category.text_color }">{{ changelog.category.label }}</b-badge>
+                    <relative-time-component class="text-muted d-md-none inline-date changelog-date" :from_time="changelog.created_at" :humanized="true" :update_interval="60000"></relative-time-component>
                 </p>
-                <span class="text-muted d-none d-md-block floating-date changelog-date">{{ changelog.created_at | moment('from', 'now') }}</span>
+                <relative-time-component class="text-muted d-none d-md-block floating-date changelog-date" :from_time="changelog.created_at" :humanized="true" :update_interval="60000"></relative-time-component>
                 <div v-html="changelog.body"></div>
                 <hr/>
             </div>
             <div class="col-12 text-center" v-if="pagination && pagination.current_page !== pagination.last_page">
-                <a href="#" @click="nextPage" class="pt-5 pb-5 text-muted">Show previous changelogs</a>
+                <span v-if="loading" class="text-muted"><b-spinner></b-spinner> <br/>Working on previous changelogs...</span>
+                <a href="#" @click="nextPage" class="pt-5 pb-5 text-muted" v-if="!loading">Show previous changelogs</a>
             </div>
         </div>
     </div>
@@ -28,7 +29,7 @@ export default {
     },
     data : function(){
         return {
-
+            loading : false
         }
     },
     computed : {
@@ -46,14 +47,13 @@ export default {
         nextPage : function(e){
             let project = this.getJsonParsedProject;
             let nextPage = this.pagination.current_page + 1;
-            this.$store.dispatch('getPublishedChangelogs', { projectUuid : project.uuid, page : nextPage });
+            this.loading = true;
+            this.$store.dispatch('getPublishedChangelogs', { vm : this, projectUuid : project.uuid, page : nextPage });
             e.preventDefault();
         }
     },
     mounted() {
         this.setInitialChangelogsData(this.getJsonParsedInitialData);
-        //let project = this.getJsonParsedProject;
-        //this.$store.dispatch('getPublishedChangelogs', { projectUuid : project.uuid });
     }
 }
 </script>

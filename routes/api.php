@@ -25,3 +25,5 @@ Route::get('/{project_uuid}/published/changelogs', [\App\Http\Controllers\Projec
 Route::get('/company/{company_id}/categories', [\App\Http\Controllers\CategoryController::class, 'getByCompanyId'])->name('company-categories');
 
 Route::get('/project/changelog/image/{filename}', [\App\Http\Controllers\ProjectController::class, 'getImage']);
+
+Route::get('/project/{uuid}/logo', [\App\Http\Controllers\ProjectController::class, 'getLogo'])->name('project-logo');

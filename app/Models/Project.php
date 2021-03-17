@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Ramsey\Uuid\Uuid;
 
 class Project extends Model
@@ -17,7 +18,8 @@ class Project extends Model
     const TERMINOLOGY_UPDATES = 3;
     const TERMINOLOGY_NEWS = 4;
 
-    const DEFAULT_CHANGELOG_LIST_COUNT = 5;
+    const DEFAULT_CHANGELOG_PAGE_ENTRY_LIMIT = 5;
+    const DEFAULT_CHANGELOG_WIDGET_ENTRY_LIMIT = 3;
 
     public $timestamps = false;
 
@@ -56,12 +58,12 @@ class Project extends Model
 
     public function changelogs(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(Changelog::class, 'project_id', 'id');
+        return $this->hasMany(Changelog::class, 'project_id', 'id')->with('category');
     }
 
     public function published(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->changelogs()->with('category')->whereDate('published_at', '<=', Carbon::now()->toDateTimeString())->latest('created_at');
+        return $this->changelogs()->whereDate('published_at', '<=', Carbon::now()->toDateTimeString())->latest('created_at');
     }
 
     public function getTerminology(): string
@@ -82,5 +84,11 @@ class Project extends Model
         }
 
         return $terminology;
+    }
+
+    public function getLogo(): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        $path = Storage::disk('public')->path($this->uuid.'/logo/' .$this->logo);
+        return response()->file($path);
     }
 }

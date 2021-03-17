@@ -36,7 +36,7 @@ class CreateChangelogsTable extends Migration
                 ->onDelete('CASCADE')
                 ->onUpdate('CASCADE');
 
-            $table->dateTime('published_at')->nullable();
+            $table->date('published_at')->nullable();
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });

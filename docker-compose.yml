@@ -1,0 +1,66 @@
+version: '3'
+services:
+
+  #PHP Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: changelogapp
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: changelog_app
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+    links:
+      - mysql
+    volumes:
+      - ./:/var/www
+      - ./.docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - changelogmgr_network
+
+  #NGINX Service
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    tty: true
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./.docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - changelogmgr_network
+
+  #MySQL Service
+  mysql:
+    image: mysql:latest
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASS: ${DB_PASSWORD}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./dbdata/mysql:/var/lib/mysql/
+      - ./dbdata/mysql-files:/var/lib/mysql-files/
+    networks:
+      - changelogmgr_network
+
+#Docker Networks
+networks:
+  changelogmgr_network:
+    driver: bridge

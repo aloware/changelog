@@ -1,4 +1,11 @@
+import moment from 'moment'
+import momentDurationFormatSetup from 'moment-duration-format'
+import 'moment-timezone'
+
+
 window._ = require('lodash');
+momentDurationFormatSetup(moment)
+window.moment = moment
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support

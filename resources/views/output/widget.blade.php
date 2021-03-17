@@ -214,9 +214,11 @@
             }
 
             .changelogs-container {
-                height: 74vh;
+                height: 84vh;
                 overflow-y: auto;
                 overflow-x: hidden;
+                border-top: 1px solid lightgrey;
+                border-bottom: 1px solid lightgrey;
             }
 
             .mt-10 {
@@ -230,22 +232,45 @@
             .text-muted {
                 color: #6c757d !important;
             }
+
+            pre.ql-syntax {
+                background: rgba(0,0,0,.05) !important;
+                padding: 2px !important;
+            }
+
+            .changelogs-container blockquote {
+                border-left: 4px solid #ccc;
+                margin-bottom: 5px;
+                margin-top: 5px;
+                padding-left: 16px;
+            }
+
+            .ql-indent-1 {
+                padding-left: 3rem;
+            }
+
+            img {
+                max-width: 100%;
+                height: auto;
+            }
+
+            .header-label {
+                margin: 10px 0;
+            }
         </style>
     </head>
     <body>
-        <h5 class="text-center">Latest Changes</h5>
-        <hr>
-        <div class="changelogs-container">
-            @foreach($project->published()->limit(5)->get() as $changelog)
-
-                <div class="callout callout-primary">
-                    <h4>{{ $changelog->title }}</h4>
-                    <p><span class="badge badge-primary">{{ $changelog->category->label }}</span></p>
-                    <p class="mt-5">{!! $changelog->body !!}</p>
-                </div>
-            @endforeach
+        <div id="app">
+            <h6 class="text-center header-label">Latest Changes</h6>
+            <div class="changelogs-container">
+                @foreach($project->published()->limit($project->widget_entry_limit)->get() as $changelog)
+                    <published-changelog-widget-component :changelog="{{ $changelog }}"></published-changelog-widget-component>
+                @endforeach
+            </div>
+            <h6 class="text-center mt-1" style="font-size: 0.75rem;"><a href="/{{$project->slug}}/changelogs" class="text-muted" target="_blank">Read more...</a></h6>
         </div>
-        <hr>
-        <h6 class="text-center mt-10"><a href="/{{$project->uuid}}/changelogs" class="text-muted" target="_blank">Read more...</a></h6>
+
+        <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-vue@1.0.4/image-resize-vue.min.js"></script>
+        <script src="{{ mix('js/app.js') }}"></script>
     </body>
 </html>

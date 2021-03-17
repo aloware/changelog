@@ -1,7 +1,8 @@
 let ChangelogWidget = (function(){
     let defaults = {
         protocol : 'http:',
-        container : null,
+        container : 'body',
+        triggerElement : null,
         translations : {
             position : 'cl_bottom', // cl_top, cl_left, cl_right
         }
@@ -27,26 +28,39 @@ ChangelogWidget.prototype.createElements = function(){
     let t, _this = this;
 
     this.elements = {
-        widgetPlaceholder : document.createElement('p'),
+        widgetPlaceholder : document.createElement('span'),
         badge : document.createElement('span'),
         animate : document.createElement('link'),
-        trigger : this.findAllSelectors(this.options.trigger)
+        trigger : document.querySelector(this.options.triggerElement)
     }
 
     this.elements.widgetPlaceholder.classList.add("widget-placeholder");
-    this.elements.widgetPlaceholder.innerHTML = (this.options.translations && this.options.translations.placeholderLabel) ? this.options.translations.placeholderLabel : 'Release Notes';
-    this.container.appendChild(this.elements.widgetPlaceholder);
+    this.elements.widgetPlaceholder.innerHTML = (this.options.translations && this.options.translations.placeholderLabel) ? this.options.translations.placeholderLabel : '';
+
+    if (this.container.tagName === 'BODY') {
+        this.container.prepend(this.elements.widgetPlaceholder);
+    } else {
+        this.container.appendChild(this.elements.widgetPlaceholder);
+    }
 
     this.elements.widgetPlaceholder.addEventListener("click", this.toggle.bind(_this), !1);
+    if (this.elements.trigger) {
+        if (typeof this.elements.trigger !== 'undefined') {
+            _this.elements.trigger.addEventListener("click", this.toggle.bind(_this), !1);
+        }
+    }
+
+    document.addEventListener('mouseup', function(e){
+        if (!_this.iframeContainer.contains(e.target)) {
+            _this.hideIframe();
+        }
+    });
+
     t = document.createElement("style");
     t.id = "cl-styles-container";
     t.textContent = ".cl-iframe-container { \n pointer-events: none; \n border-radius: 4px; \n box-shadow: 0 0 1px rgba(99, 114, 130, 0.32), 0 8px 16px rgba(27, 39, 51, 0.08); \n background: #fff; \n border: none; \n position: fixed; \n top: -900em; \n z-index: 2147483647; \n width: 22vw; \n height: 60vh; \n opacity: 0; \n will-change: height, margin-top, opacity; \n margin-top: -10px; \n transition: margin-top 0.15s ease-out, opacity 0.1s ease-out; \n overflow: hidden; \n } \n .cl-iframe-container.cl-iframe-visible { \n opacity : 1; \n pointer-events : auto; \n margin-top : 0; \n height: 60vh; \n top: 490px; } \n .widget-placeholder { \n cursor : pointer \n} \n iframe.cl-frame { \n width: 100%; \n position: relative; \n overflow: hidden; \n height: 100%; \n }";
     document.body.appendChild(t);
     this.createIFrame();
-}
-
-ChangelogWidget.prototype.findAllSelectors = function(t){
-    return document.querySelectorAll(t);
 }
 
 ChangelogWidget.prototype.createIFrame = function(){
@@ -58,7 +72,7 @@ ChangelogWidget.prototype.createIFrame = function(){
     f.referrerPolicy = "strict-origin",
     f.sandbox = "allow-same-origin allow-scripts allow-top-navigation allow-popups allow-forms allow-popups-to-escape-sandbox",
     f.src = this.getIFrameUrl();
-    f.addEventListener("load", this.onFrameLoad)
+    f.addEventListener("load", this.onFrameLoad.bind(this))
     d.appendChild(f);
     this.iframeContainer = d;
 }
@@ -71,15 +85,31 @@ ChangelogWidget.prototype.getIFrameTarget = function(){
     return document.body;
 }
 
-ChangelogWidget.prototype.onFrameLoad = function(){
+ChangelogWidget.prototype.onFrameLoad = function(e){
+    let innerDoc = e.target.contentDocument || e.target.contentWindow.document;
+    let headerElement =  innerDoc.querySelector('.header-label');
+    headerElement.innerHTML = (this.options.translations && this.options.translations.headerLabel) ? this.options.translations.headerLabel : 'Latest Changes';
+}
 
+ChangelogWidget.prototype.toggle = function(){
+    return this.isVisible ? this.hideIframe() : this.showIframe();
+}
+
+ChangelogWidget.prototype.hideIframe = function(){
+    this.iframeContainer.classList.remove("cl-iframe-visible");
+    return this.isVisible = !1;
+}
+
+ChangelogWidget.prototype.showIframe = function(){
+    this.setWidgetPosition();
+    this.iframeContainer.classList.add("cl-iframe-visible");
+    return this.isVisible = !0;
 }
 
 ChangelogWidget.prototype.setWidgetPosition = function(){
     let top, left = 0;
     switch (this.options.translations.position) {
         case 'cl_top' :
-            console.log(this.elements.widgetPlaceholder.offsetTop, this.iframeContainer.offsetHeight)
             top = this.elements.widgetPlaceholder.offsetTop - this.iframeContainer.offsetHeight;
             left = this.elements.widgetPlaceholder.offsetLeft + 2;
             break;
@@ -97,21 +127,6 @@ ChangelogWidget.prototype.setWidgetPosition = function(){
 
     this.iframeContainer.style.left = left + 'px';
     this.iframeContainer.style.top = top + 'px';
-}
-
-ChangelogWidget.prototype.toggle = function(){
-    return this.isVisible ? this.hideIframe() : this.showIframe();
-}
-
-ChangelogWidget.prototype.showIframe = function(){
-    this.setWidgetPosition();
-    this.iframeContainer.classList.add("cl-iframe-visible");
-    return this.isVisible = !0;
-}
-
-ChangelogWidget.prototype.hideIframe = function(){
-    this.iframeContainer.classList.remove("cl-iframe-visible");
-    return this.isVisible = !1;
 }
 
 document.addEventListener('DOMContentLoaded', function(){

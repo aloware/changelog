@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CategoryStoreRequest;
 use App\Models\Category;
 use App\Models\Company;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CategoryController extends Controller
 {
@@ -33,21 +35,106 @@ class CategoryController extends Controller
         return response()->json($company->categories);
     }
 
-    public function store(Request $request): \Illuminate\Http\JsonResponse
+    public function index($companyId)
     {
-        $category = new Category();
-        $category->label = $request->get('label');
-
-        //TODO check on this, might need to add relationship to isolate categories per company and accounts
-        //$category->account_id = $request->get('account_id');
-        //$category->company_id = $request->get('company_id');
-
-        $category->save();
-
-        return response()->json(['category' => $category]);
+        return view('category.index')->with('company', Company::find($companyId));
     }
 
-    public function update(Request $request, $id): \Illuminate\Http\JsonResponse
+    /**
+     *  * @OA\Post (
+     *     path="/company/{companyId}/category",
+     *     summary="store company new changelog category",
+     *     @OA\Parameter(
+     *     name="companyId",
+     *     in="path",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     * ),
+     *     @OA\Parameter(
+     *     name="label",
+     *     in="header",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     * ),
+     *     @OA\Parameter(
+     *     name="bg_color",
+     *     in="header",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     * ),
+     *     @OA\Parameter(
+     *     name="text_color",
+     *     in="header",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="success"
+     *     )
+     * )
+     * @param CategoryStoreRequest $request
+     * @param $companyId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(CategoryStoreRequest $request, $companyId): \Illuminate\Http\JsonResponse
+    {
+        $category = new Category();
+
+        $data = $request->validated();
+
+        $category->label = $data['label'];
+        $category->company_id = $companyId;
+        $category->bg_color = $data['bg_color'];
+        $category->text_color = $data['text_color'];
+
+        if (\auth()->user()->can('store', $category)) {
+            $category->save();
+            return response()->json(['category' => $category]);
+        }
+        else {
+            return $this->handleUnauthorizedJsonResponse();
+        }
+    }
+
+    /**
+     *  * @OA\Put  (
+     *     path="/company/category/{id}",
+     *     summary="update company changelog category",
+     *     @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     * ),
+     *     @OA\Parameter(
+     *     name="label",
+     *     in="header",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     * ),
+     *     @OA\Parameter(
+     *     name="bg_color",
+     *     in="header",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     * ),
+     *     @OA\Parameter(
+     *     name="text_color",
+     *     in="header",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="success"
+     *     )
+     * )
+     * @param CategoryStoreRequest $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(CategoryStoreRequest $request, $id): \Illuminate\Http\JsonResponse
     {
         $category = Category::find($id);
         if (!$category) {
@@ -60,6 +147,25 @@ class CategoryController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Category has been successfully updated.', 'category' => $category]);
 
     }
+
+    /**
+     *  * @OA\Delete  (
+     *     path="/company/category/{id}",
+     *     summary="delete company changelog category",
+     *     @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     *      ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="success"
+     *     )
+     * )
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy($id): \Illuminate\Http\JsonResponse
     {
         $category = Category::find($id);
@@ -67,7 +173,10 @@ class CategoryController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unable to find changelog category.']);
         }
 
-        //TODO check for soft deletion
+        if (count($category->changelogs) > 0) {
+            return response()->json(['status' => 'error', 'message' => 'There were changelogs linked to this category. Unable to delete.']);
+        }
+
         $category->delete();
 
         return response()->json(['status' => 'success', 'message' => 'Category has been successfully deleted.']);

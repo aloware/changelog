@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -17,5 +18,11 @@ class CategoryPolicy
     public function __construct()
     {
         //
+    }
+
+    public function store(User $user, Category $category): bool
+    {
+        return true;
+        //return $user->company->id === $category->company_id;
     }
 }

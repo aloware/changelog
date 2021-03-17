@@ -1,0 +1,9 @@
+.env
+/node_modules
+/vendor
+
+bootstrap/cache/services.php
+
+storage/app/*
+storage/framework/cache/*
+storage/framework/sessions/*

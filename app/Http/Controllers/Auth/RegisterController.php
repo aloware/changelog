@@ -97,14 +97,20 @@ class RegisterController extends Controller
             [
                 'label' => 'New',
                 'company_id' => $company->id,
+                'bg_color' => '#007bff',
+                'text_color' => '#fff'
             ],
             [
                 'label' => 'Improvement',
                 'company_id' => $company->id,
+                'bg_color' => '#28a745',
+                'text_color' => '#fff'
             ],
             [
                 'label' => 'Fix',
                 'company_id' => $company->id,
+                'bg_color' => '#ffc107',
+                'text_color' => '#fff'
             ]
         ];
 

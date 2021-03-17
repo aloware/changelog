@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 
 class Changelog extends Model
 {
@@ -13,6 +14,8 @@ class Changelog extends Model
 
     const DEFAULT_TITLE = "We're starting a changelog." ;
     const DEFAULT_BODY = "This is your first change log. Below you can make changes, edit and make it public." ;
+
+    const CACHE_KEY = "changelog";
 
     protected $casts = [
         //'published_at' => 'timestamp'
@@ -31,5 +34,24 @@ class Changelog extends Model
     public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Category::class, 'category_id', 'id');
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+        self::created(function (){
+            self::forgetCache();
+        });
+        self::updated(function (){
+            self::forgetCache();
+        });
+        self::deleted(function (){
+            self::forgetCache();
+        });
+    }
+
+    public static function forgetCache()
+    {
+        Cache::forget(self::CACHE_KEY);
     }
 }

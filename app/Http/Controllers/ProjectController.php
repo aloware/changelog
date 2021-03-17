@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProjectStoreRequest;
 use App\Http\Traits\CreatesProject;
+use App\Models\Changelog;
 use App\Models\FileUpload;
 use App\Models\Project;
 use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Ramsey\Uuid\Uuid;
 
@@ -62,39 +64,60 @@ class ProjectController extends Controller
     {
         $project = Project::where('uuid', $projectUuid)->first();
 
-        return response()->json($project->published()->paginate(Project::DEFAULT_CHANGELOG_LIST_COUNT));
+        //TODO
+//        $changelogs = Cache::rememberForever(Changelog::CACHE_KEY, function() use ($project){
+//            return $project->published()->paginate($project->page_entry_limit);
+//        });
+
+        return response()->json($project->published()->paginate($project->page_entry_limit));
     }
 
-    public function getPageView($projectUuid)
+    public function getPageView($projectSlug)
     {
-        $project = Project::where('uuid', $projectUuid)->first();
+        $project = Project::where('slug', $projectSlug)->first();
         return view('output.page')->with('project', $project);
     }
 
     public function getWidgetView($projectUuid)
     {
         $project = Project::where('uuid', $projectUuid)->first();
+
+        if (!$project) {
+            abort(404);
+        }
+
         return view('output.widget')->with('project', $project);
     }
 
-    public function store(ProjectStoreRequest $request): \Illuminate\Http\JsonResponse
+    public function create($companyId)
     {
-        $company = Company::find($request->get('company_id'));
-        $project = $this->addProject($request->validated(), $company->id);
-
-        return response()->json(['account' => $project]);
+        return view('project.settings')
+            ->with('project', new Project())
+            ->with('user', Auth::user());
     }
 
-    public function update(ProjectStoreRequest $request, $id): \Illuminate\Http\JsonResponse
+    public function store(ProjectStoreRequest $request, $companyId): \Illuminate\Http\JsonResponse
     {
-        $project = Project::find($id);
+        $company = Company::find($companyId);
+
+        try {
+            $project = $this->addProject($request->validated(), $company->id);
+            return response()->json(['status' => 'success', 'message' => 'project has been successfully created.', 'project' => $project]);
+        } catch (\Exception $e) {
+            return $this->handleUnauthorizedJsonResponse();
+        }
+    }
+
+    public function update(ProjectStoreRequest $request, $uuid): \Illuminate\Http\JsonResponse
+    {
+        $project = Project::where('uuid', $uuid)->first();
         if (!$project) {
             return response()->json(['status' => 'error', 'message' => 'Unable to find project.']);
         }
 
         if (\auth()->user()->can('update', $project)) {
             $project = $this->updateProject($request->validated(), $project);
-            return response()->json(['project' => $project]);
+            return response()->json(['status' => 'success', 'message' => 'Project has been successfully updated.', 'project' => $project]);
         } else {
             return $this->handleUnauthorizedJsonResponse();
         }
@@ -104,7 +127,6 @@ class ProjectController extends Controller
     {
         $fileUpload = FileUpload::where('name', $filename)->first();
         $project = Project::find($fileUpload->project_id);
-
 
         $path = Storage::disk('public')->path($project->uuid.'/' .$filename);
         return response()->file($path);
@@ -126,7 +148,7 @@ class ProjectController extends Controller
             $fileUpload->mimetype = $file->getClientMimeType();
 
             $fileUpload->name = $filename;
-            $fileUpload->original_file = $file->getClientOriginalName().'.'.$file->getExtension();
+            $fileUpload->original_file = $file->getClientOriginalName();
 
             $fileUpload->created_by = Auth::id();
             $fileUpload->save();
@@ -139,10 +161,56 @@ class ProjectController extends Controller
         return response()->json(['status' => 'error', 'message' => 'No file found.']);
     }
 
-    public function settings($projectUuid)
+    public function settings($projectSlug)
     {
-        $project =  Project::where('uuid', $projectUuid)->first();
+        $project =  Project::where('slug', $projectSlug)->first();
 
-        return view('project.settings')->with('project', $project)->with('user', Auth::user());
+        return view('project.settings')
+            ->with('project', $project)
+            ->with('user', Auth::user());
+    }
+
+    public function uploadLogo(Request $request, $uuid): \Illuminate\Http\JsonResponse
+    {
+        $project = Project::where('uuid', $uuid)->first();
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+
+            $filename = Uuid::uuid1().'.'.$file->extension();
+
+            $fileUpload = new FileUpload();
+            $fileUpload->uuid = Uuid::uuid1();
+            $fileUpload->project_id = $project->id;
+
+            $fileUpload->extension = $file->extension();
+            $fileUpload->mimetype = $file->getClientMimeType();
+
+            $fileUpload->name = $filename;
+            $fileUpload->original_file = $file->getClientOriginalName();
+
+            $fileUpload->created_by = Auth::id();
+            $fileUpload->save();
+
+            $project->logo = $filename;
+            $project->save();
+
+            $request->file('file')->storeAs($project->uuid . '/logo', $filename, 'public');
+            return response()->json(['url' => '/api/project/'. $project->uuid .'/logo/' . $filename]);
+        }
+
+        return response()->json(['status' => 'error', 'message' => 'No file found.']);
+    }
+
+    public function getLogo($uuid): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        $project = Project::where('uuid', $uuid)->first();
+        $fileUpload = FileUpload::where('name', $project->logo)->first();
+
+        if ($fileUpload) {
+            $path = Storage::disk('public')->path($project->uuid.'/logo/' . $project->logo);
+            return response()->file($path);
+        } else {
+            //TODO make an avatar logo?
+        }
     }
 }
