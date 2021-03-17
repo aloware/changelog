@@ -30,4 +30,9 @@ export default {
         justify-content: space-between;
         margin: 0;
     }
+
+    .callout-header h4 {
+        font-size: 1rem;
+        padding-bottom: 12px;
+    }
 </style>

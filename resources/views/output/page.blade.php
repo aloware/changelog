@@ -47,6 +47,10 @@
             .ql-indent-1 {
                 padding-left: 3rem;
             }
+
+            .changelogs-container img {
+                max-width: 100%;
+            }
         </style>
     </head>
     <body>
