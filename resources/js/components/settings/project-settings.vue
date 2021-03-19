@@ -6,7 +6,7 @@
         </div>
         <hr/>
 
-        <b-form @submit.stop.prevent="submitForm">
+        <b-form @submit.stop.prevent="submitForm" class="mb-5">
             <b-form-group label="Name">
                 <b-form-input
                     v-model="project.name"
@@ -51,7 +51,7 @@
             </b-form-group>
 
             <div v-if="project.id">
-                <b-form-group label="UUID">
+                <b-form-group label="Project UUID">
                     <b-input-group>
                         <b-form-input
                             name="uuid"
@@ -64,7 +64,7 @@
                               v-clipboard:copy="project.uuid"
                               v-clipboard:success="onCopy"
                               v-clipboard:error="onError"
-                            >Copy</b-button>
+                            ><font-awesome-icon :icon="['far', 'copy']" /></b-button>
                         </b-input-group-append>
                     </b-input-group>
                 </b-form-group>
@@ -104,15 +104,17 @@
                         required
                     ></b-form-input>
                 </b-form-group>
-
-                <widget-settings-component :project="project"></widget-settings-component>
-          </div>
+            </div>
             <b-button type="submit" variant="primary" :disabled="submissionInProgress">
                 <font-awesome-icon :icon="['fas', 'check']" v-if="!submissionInProgress" />
                 <b-spinner small v-if="submissionInProgress" ></b-spinner>
                 {{ submissionInProgress ? 'Please wait..' : 'Submit' }}
             </b-button>
         </b-form>
+
+        <div v-if="project.id">
+            <widget-settings-component :project="project"></widget-settings-component>
+        </div>
     </div>
 </template>
 
