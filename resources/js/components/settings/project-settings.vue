@@ -3,7 +3,6 @@
         <div class="heading-container">
             <h5 v-if="project.id">Project Settings</h5>
             <h5 v-if="!project.id">New Project</h5>
-            <b-button v-if="project.id" v-bind:href="'/company/' + project.company_id + '/project/new'" type="button" variant="primary">Add Project</b-button>
         </div>
         <hr/>
 
@@ -52,6 +51,24 @@
             </b-form-group>
 
             <div v-if="project.id">
+                <b-form-group label="UUID">
+                    <b-input-group>
+                        <b-form-input
+                            name="uuid"
+                            v-model="project.uuid"
+                            placeholder="Your project uuid"
+                            disabled
+                        ></b-form-input>
+                        <b-input-group-append>
+                            <b-button variant="info"
+                              v-clipboard:copy="project.uuid"
+                              v-clipboard:success="onCopy"
+                              v-clipboard:error="onError"
+                            >Copy</b-button>
+                        </b-input-group-append>
+                    </b-input-group>
+                </b-form-group>
+
                 <h6 class="mt-5 text-muted">Public Page</h6>
                 <hr/>
 
@@ -66,7 +83,7 @@
                 <b-form-group label="URL">
                     <b-input-group>
                         <b-form-input
-                            v-bind:value="'/'+ project.slug +'/changelogs'"
+                            v-bind:value=" serverUrl + '/'+ project.slug +'/changelogs'"
                             placeholder="Public page changelog URL"
                             disabled
                         ></b-form-input>
@@ -77,37 +94,18 @@
                 </b-form-group>
             </div>
 
-          <div v-if="project.id">
-              <h6 class="mt-5 text-muted">Widget</h6>
-              <hr/>
+            <div v-if="project.id">
+                <h6 class="mt-5 text-muted">Widget</h6>
+                <hr/>
+                <b-form-group label="Entries Limit">
+                    <b-form-input
+                        v-model="project.widget_entry_limit"
+                        placeholder="No. of changelogs to be shown in the widget"
+                        required
+                    ></b-form-input>
+                </b-form-group>
 
-              <b-form-group>
-                  <small class="text-muted">Your widget code</small>
-                  <b-card class="pb-5">
-                      <b-card-text>
-                          <code>
-                              &lt;script&gt;
-                              <br/>  let changelog_config = {
-                              <br/>&emsp;     container : '__REPLACE_WITH_YOUR_WIDGET_DOM_CONTAINER',
-                              <br/>&emsp;        uuid : '{{ project.uuid }}',
-                              <br/>&emsp;        translations : {
-                              <br/>&emsp;&ensp;           placeholderLabel : 'Release Notes',
-                              <br/>&emsp;        }
-                              <br/>    }
-                              <br/>&lt;/script&gt;
-                              <br/>&lt;script async src="http://localhost/js/widget.js"&gt;&lt;/script&gt;
-                              <br/>
-                          </code>
-                      </b-card-text>
-                  </b-card>
-              </b-form-group>
-              <b-form-group label="Entries Limit">
-                  <b-form-input
-                      v-model="project.widget_entry_limit"
-                      placeholder="No. of changelogs to be shown in the widget"
-                      required
-                  ></b-form-input>
-              </b-form-group>
+                <widget-settings-component :project="project"></widget-settings-component>
           </div>
             <b-button type="submit" variant="primary" :disabled="submissionInProgress">
                 <font-awesome-icon :icon="['fas', 'check']" v-if="!submissionInProgress" />
@@ -124,7 +122,7 @@ import 'vue-swatches/dist/vue-swatches.css'
 import AvatarCropper from "vue-avatar-cropper"
 
 export default {
-    name: "ProjectComponent",
+    name: "project-settings",
     props : {
         project_data : String,
         company_id : String
@@ -140,7 +138,8 @@ export default {
         return {
             submissionInProgress : !1,
             projectLogo : undefined,
-            uploadingLogo : !1
+            uploadingLogo : !1,
+            serverUrl : location.origin
         }
     },
     mounted (){
@@ -160,7 +159,7 @@ export default {
         createProject : function(){
             this.submissionInProgress = true;
 
-            axios.post('/company/'+ this.company_id +'/project/new', this.project).then(response => {
+            axios.post('/company/'+ this.company_id +'/project', this.project).then(response => {
                 if (response.data.status === 'success') {
                     window.location.href = '/projects/' + response.data.project.slug + '/changelogs'
                 } else {
@@ -200,6 +199,12 @@ export default {
         },
         handlerError(message, type, xhr) {
             //this.message = "Oops! Something went wrong...";
+        },
+        onCopy: function (e) {
+            this.$toastr.s("Success", 'Project uuid has been copied to the clipboard.');
+        },
+        onError: function (e) {
+            this.$toastr.e("Error", 'Failed to copy project uuid to the clipboard.');
         }
     }
 }

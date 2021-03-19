@@ -26,7 +26,8 @@
                         :customModules="customModulesForEditor"
                         :editorOptions="editorSettings"
                         @image-added="handleImageAdded"
-                        v-model="changelog.body" :editorToolbar="customToolbar">
+                        v-model="changelog.body" :editorToolbar="customToolbar"
+                        placeholder="Content">
                     </vue-editor>
                 </b-form-group>
 
@@ -100,6 +101,7 @@
                 is_published : false,
                 customToolbar: [
                     [{ 'header': [false, 1, 2, 3, 4, 5, 6, ] }],
+                    [{ 'color': [] }, { 'background': [] }],
                     ['bold', 'italic', 'underline', 'strike'],
                     [{'align': ''}, {'align': 'center'}, {'align': 'right'}, {'align': 'justify'}],
                     [{ 'indent': '-1'}, { 'indent': '+1' }],

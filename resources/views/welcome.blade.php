@@ -18,6 +18,10 @@
             body {
                 font-family: 'Nunito';
             }
+
+            .widget-placeholder {
+                /*font-weight: 700;*/
+            }
         </style>
     </head>
     <body class="antialiased">
@@ -50,6 +54,9 @@
 
 
                 <div class="cl-container" title="Changelogs">
+
+                </div>
+                <div style="margin-left: 100px;">
                     <font-awesome-icon :icon="['fas', 'bell']" />
                 </div>
 
@@ -158,9 +165,10 @@
                 container : '.cl-container', //optional - insert to the DOM - body
                 uuid : '78b89a57-b805-401d-8f62-de9668a8a968',
                 translations : {
-                    placeholderLabel : '', //link element
+                    // placeholderLabel : 'Release Notes', //link element
                     headerLabel : 'Latest News'
                 },
+                //position : 'cl_bottom',
                 triggerElement : '.fa-bell'
             }
         </script>

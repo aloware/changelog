@@ -23,7 +23,7 @@ import VueToastr from "vue-toastr"
 import moment from 'vue-moment'
 import store from './store'
 import VueConfirmDialog from 'vue-confirm-dialog'
-import BlockUI from 'vue-blockui'
+import VueClipboard from 'vue-clipboard2'
 
 import './filters'
 window.Vue = Vue;
@@ -39,7 +39,7 @@ Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 Vue.use(VueToastr);
 Vue.use(moment);
-Vue.use(BlockUI)
+Vue.use(VueClipboard)
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -54,8 +54,12 @@ Vue.use(BlockUI)
 Vue.component('changelogs-component', require('./components/changelog-list.vue').default);
 Vue.component('changelog-component', require('./components/changelog.vue').default);
 Vue.component('changelog-form-component', require('./components/changelog-form.vue').default);
-Vue.component('published-changelog-component', require('./components/published-changelog-list.vue').default);
+
+Vue.component('published-changelog-page-list-component', require('./components/published-changelog-page-list.vue').default);
+
 Vue.component('published-changelog-widget-component', require('./components/published-changelog-widget.vue').default);
+Vue.component('published-changelog-widget-list-component', require('./components/published-changelog-widget-list.vue').default);
+
 Vue.component('widget-settings-component', require('./components/settings/widget-settings.vue').default);
 Vue.component('page-settings-component', require('./components/settings/page-settings.vue').default);
 Vue.component('categories-component', require('./components/category-list.vue').default);

@@ -31,7 +31,7 @@ class ProjectStoreRequest extends FormRequest
         return [
             'name' => [
                 'required',
-                Rule::unique('projects')->ignore($user->company->id, 'company_id')
+                Rule::unique('projects', 'uuid')->ignore($this->uuid)
             ],
             'company_id' => [
                 'integer',
