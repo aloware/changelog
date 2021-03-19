@@ -27,11 +27,10 @@ class CategoryStoreRequest extends FormRequest
         $user = $this->user();
 
         return [
-            'label' => [
+            'label' =>
+                [
                 'required',
-                Rule::unique('categories')->where(function($query) use ($user) {
-                    return $query->where('company_id', $user->company->id);
-                })
+                Rule::unique('categories', 'id')->ignore($this->id)
             ],
             'company_id' => [
                 'integer',

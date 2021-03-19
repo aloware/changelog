@@ -90,7 +90,7 @@ class CategoryController extends Controller
 
         if (\auth()->user()->can('store', $category)) {
             $category->save();
-            return response()->json(['category' => $category]);
+            return response()->json(['status' => 'success', 'category' => $category]);
         }
         else {
             return $this->handleUnauthorizedJsonResponse();
@@ -141,11 +141,19 @@ class CategoryController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unable to find changelog category.']);
         }
 
-        $category->label = $request->get('label');
-        $category->save();
+        $data = $request->validated();
 
-        return response()->json(['status' => 'success', 'message' => 'Category has been successfully updated.', 'category' => $category]);
+        $category->label = $data['label'];
+        $category->bg_color = $data['bg_color'];
+        $category->text_color = $data['text_color'];
 
+        if (\auth()->user()->can('update', $category)) {
+            $category->save();
+            return response()->json(['status' => 'success', 'message' => 'Category has been successfully updated.', 'category' => $category]);
+        }
+        else {
+            return $this->handleUnauthorizedJsonResponse();
+        }
     }
 
     /**

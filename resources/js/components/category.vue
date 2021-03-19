@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-badge v-bind:style="{ backgroundColor : category.bg_color, color : category.text_color }">{{ category.label }}</b-badge>
+        <b-badge v-bind:style="{ backgroundColor : category.bg_color, color : category.text_color }">{{ category.label || 'Label' }}</b-badge>
     </div>
 </template>
 

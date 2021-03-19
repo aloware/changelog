@@ -1,28 +1,8 @@
 <template>
-    <div>
+    <b-modal id="category-form-modal" :title="getModalTitle"
+             @hidden="resetModal"
+             @ok="handleOk">
         <b-form @submit.stop.prevent="submitForm">
-            <b-form-group
-                label="Background color"
-            >
-                <v-swatches
-                    v-model="category.bg_color"
-                    show-fallback
-                    fallback-input-type="color"
-                    popover-x="right"
-                ></v-swatches>
-            </b-form-group>
-
-            <b-form-group
-                label="Text color"
-            >
-                <v-swatches
-                    v-model="category.text_color"
-                    show-fallback
-                    fallback-input-type="color"
-                    popover-x="right"
-                ></v-swatches>
-            </b-form-group>
-
             <b-form-group label="Label">
                 <b-form-input
                     v-model="category.label"
@@ -30,19 +10,45 @@
                     required
                 ></b-form-input>
             </b-form-group>
+            <b-form-row>
+                <b-col>
+                    <b-form-group
+                        label="Background color"
+                    >
+                        <v-swatches
+                            v-model="category.bg_color"
+                            show-fallback
+                            fallback-input-type="color"
+                            popover-x="right"
+                        ></v-swatches>
+                    </b-form-group>
+                </b-col>
+                <b-col>
+                    <b-form-group
+                        label="Text color"
+                    >
+                        <v-swatches
+                            v-model="category.text_color"
+                            show-fallback
+                            fallback-input-type="color"
+                            popover-x="right"
+                        ></v-swatches>
+                    </b-form-group>
+                </b-col>
+            </b-form-row>
+        </b-form>
+        <hr/>
+        <category-component v-bind:category="category"></category-component>
 
-            <b-button type="submit" variant="primary" :disabled="submissionInProgress">
+        <div slot="modal-footer">
+            <b-btn variant="secondary" @click="resetModal" :disabled="submissionInProgress">Cancel</b-btn>
+            <b-btn variant="primary" @click="handleOk" :disabled="submissionInProgress">
                 <font-awesome-icon :icon="['fas', 'check']" v-if="!submissionInProgress" />
                 <b-spinner small v-if="submissionInProgress" ></b-spinner>
                 {{ submissionInProgress ? 'Please wait..' : 'Submit' }}
-            </b-button>
-            <b-button type="button" variant="danger" v-on:click="cancelForm" :disabled="submissionInProgress">
-                <font-awesome-icon :icon="['fas', 'times']"/>
-                Cancel
-            </b-button>
-        </b-form>
-        <hr/>
-    </div>
+            </b-btn>
+        </div>
+    </b-modal>
 </template>
 
 <script>
@@ -59,26 +65,29 @@
         },
         components: { VSwatches },
         computed : {
-            ...mapGetters(['category'])
+            ...mapGetters(['category']),
+            getModalTitle : function(){
+                return ((this.category && this.category.id) ? 'Edit' : 'Add') + ' Category'
+            }
         },
         data : function(){
             return {
                 submissionInProgress : false
-                // bg_color : '#A463BF',
-                // text_color : '#fff',
-                // label : ''
             }
         },
         methods : {
             ...mapActions(['storeCategory', 'updateCategory']),
-            cancelForm : function(){
-                this.$store.commit('cancelCategoryForm', this.$store.state);
-            },
             submitForm : function(){
                 this.submissionInProgress = true;
                 if (this.category.id) {
                     this.updateCategory(this.category).then(response => {
-                        this.handleErrors(response);
+                        if (response.data.status === 'success') {
+                            this.$nextTick(() => {
+                                this.$bvModal.hide('category-form-modal')
+                            })
+                        } else {
+                            this.handleErrors(response);
+                        }
                     }).catch(error => {
                         this.handleSubmissionFailure(error);
                     }).then(() => {
@@ -87,7 +96,14 @@
                 } else {
                     this.category.company_id = this.companyid
                     this.storeCategory(this.category).then(response => {
-                        this.handleErrors(response);
+                        if (response.data.status === 'success') {
+                            this.$nextTick(() => {
+                                this.$bvModal.hide('category-form-modal')
+                            })
+                        } else {
+                            this.handleErrors(response);
+                        }
+
                     }).catch(error => {
                         this.handleSubmissionFailure(error);
                     }).then(() => {
@@ -95,6 +111,18 @@
                     });
                 }
             },
+            handleOk(bvModalEvt) {
+                // Prevent modal from closing
+                bvModalEvt.preventDefault()
+                // Trigger submit handler
+                this.submitForm()
+            },
+            resetModal : function(){
+                this.$store.commit('cancelCategoryForm', this.$store.state);
+                this.$nextTick(() => {
+                    this.$bvModal.hide('category-form-modal')
+                })
+            }
         },
         mounted (){
 

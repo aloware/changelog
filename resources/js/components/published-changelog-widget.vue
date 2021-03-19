@@ -1,38 +1,22 @@
 <template>
-    <div class="callout callout-primary">
-        <div class="callout-header">
-            <h4>{{ changelog.title }}</h4>
-            <p>
-                <span class="badge " v-bind:style="{backgroundColor: changelog.category.bg_color, color : changelog.category.text_color}">{{ changelog.category.label }}</span>
-                <small class="text-muted"><relative-time-component :from_time="changelog.created_at" :humanized="true" :update_interval="60000"></relative-time-component></small>
-            </p>
+    <div>
+        <h6 class="text-center header-label">Latest Changes</h6>
+        <div class="changelogs-container scrollable">
+            <published-changelog-widget-list-component :changelog="changelog" v-for="(changelog, index) in changelogs" :key="changelog.id"></published-changelog-widget-list-component>
         </div>
-
-        <p class="mt-5" v-html="changelog.body"></p>
+        <div class="changelog-widget-footer">
+            <h6 class="text-center" style="font-size: 0.75rem;"><a v-bind:href="'/'+ project.slug + '/changelogs'" class="text-muted" target="_blank">Read more...</a></h6>
+        </div>
     </div>
 </template>
 
 <script>
 export default {
     name: "published-changelog-widget",
-    props : ['changelog']
+    props : ['changelogs', 'project'],
 }
 </script>
 
 <style scoped>
-    .callout-header {
-        border-bottom: 1px solid lightgray;
-        padding-bottom: 5px;
-    }
 
-    .callout-header p {
-        display: flex;
-        justify-content: space-between;
-        margin: 0;
-    }
-
-    .callout-header h4 {
-        font-size: 1rem;
-        padding-bottom: 12px;
-    }
 </style>

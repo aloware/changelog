@@ -22,7 +22,11 @@ class CategoryPolicy
 
     public function store(User $user, Category $category): bool
     {
-        return true;
-        //return $user->company->id === $category->company_id;
+        return $user->company->id == $category->company_id;
+    }
+
+    public function update(User $user, Category $category): bool
+    {
+        return $user->company->id == $category->company_id;
     }
 }

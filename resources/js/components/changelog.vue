@@ -1,14 +1,17 @@
 <template>
     <b-card>
-        <h4 data-v-5573eef4="" class="card-title">{{ changelog.title }}
+        <div class="badge-container">
+            <b-badge v-bind:style="{ backgroundColor : changelog.category.bg_color, color : changelog.category.text_color }">{{ changelog.category.label }}</b-badge>
             <small class="float-right text-muted changelog-date">
 
-            <span v-if="!changelog.published_at"> Draft | </span>
+                <span v-if="!changelog.published_at"> Draft | </span>
+                <span v-if="isFuturePublished"> {{ isFuturePublishedText }} </span>
                 <relative-time-component :from_time="changelog.created_at" :humanized="true" v-if="changelog.created_at"></relative-time-component>
             </small>
-        </h4>
-        <b-badge v-bind:style="{ backgroundColor : changelog.category.bg_color, color : changelog.category.text_color }">{{ changelog.category.label }}</b-badge>
-        <p v-html="changelog.body" class="mt-3"></p>
+        </div>
+
+        <h4 data-v-5573eef4="" class="card-title mt-2 changelog-title">{{ changelog.title || 'Title' }} </h4>
+        <p v-html="changelog.body || 'Content'" class="mt-2 changelog-body"></p>
         <hr/>
         <div class="footer-container">
             <div></div>
@@ -33,7 +36,20 @@
     export default {
         name: "ChangelogComponent",
         props : ['changelog'],
-        computed : mapGetters(['categories', 'showChangelogEditor']),
+        computed : {
+            ...mapGetters(['categories', 'showChangelogEditor']),
+            isFuturePublished : function(){
+
+                if (!this.changelog.published_at || this.changelog.published_at.length < 1) {
+                    return false;
+                }
+
+                return moment().isBefore(moment(this.changelog.published_at));
+            },
+            isFuturePublishedText : function(){
+                return 'To be published on ' + moment(this.changelog.published_at).format('MMM DD, YYYY') + ' |';
+            }
+        },
         data(){
             return {
                 deletionInProgress : !1,
@@ -71,6 +87,12 @@
 </script>
 
 <style scoped>
+    .badge-container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+
     .changelog-date {
         font-size: 0.8rem;
     }

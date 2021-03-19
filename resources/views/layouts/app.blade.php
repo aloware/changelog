@@ -21,46 +21,6 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Montserrat', sans-serif !important;
-        }
-
-        .vue-swatches__trigger {
-            border: 1px solid grey;
-        }
-
-        .badge {
-            line-height: 2 !important;
-        }
-
-        pre.ql-syntax {
-            background: rgba(0,0,0,.05) !important;
-            padding: 2px !important;
-        }
-
-        .ql-snow .ql-editor pre.ql-syntax {
-            color: #292927 !important;
-        }
-
-        .changelogs-container blockquote {
-            border-left: 4px solid #ccc;
-            margin-bottom: 5px;
-            margin-top: 5px;
-            padding-left: 16px;
-        }
-
-        .changelogs-container img {
-            max-width: 100%;
-            height: auto;
-        }
-
-        .ql-indent-1 {
-            padding-left: 3rem;
-        }
-
-
-    </style>
     @yield('css')
 </head>
 <body>
@@ -107,7 +67,7 @@
                                         <a class="dropdown-item @if(isset($project) && $project->id == $item->id) active @endif" href="{{ route('project-changelogs-view', ['slug' => $item->slug]) }}">{{ $item->name }}</a>
                                     @endforeach
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{{ route('create-project', ['id' => Auth::user()->company->id]) }}">New Project</a>
+                                    <a class="dropdown-item" href="{{ route('create-project', ['id' => Auth::user()->company->id]) }}">Add Project</a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{{ route('categories', ['companyId' => Auth::user()->company->id]) }}">Categories</a>
 {{--                                    <a class="dropdown-item" href="{{ route('project-changelogs-view', ['app_name' => $item->name]) }}">Settings</a>--}}

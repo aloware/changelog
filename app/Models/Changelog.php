@@ -15,7 +15,7 @@ class Changelog extends Model
     const DEFAULT_TITLE = "We're starting a changelog." ;
     const DEFAULT_BODY = "This is your first change log. Below you can make changes, edit and make it public." ;
 
-    const CACHE_KEY = "changelog";
+    const CACHE_KEY_PREFIX = "changelog_";
 
     protected $casts = [
         //'published_at' => 'timestamp'
@@ -39,19 +39,19 @@ class Changelog extends Model
     public static function boot()
     {
         parent::boot();
-        self::created(function (){
-            self::forgetCache();
+        self::created(function ($model){
+            self::forgetCache($model);
         });
-        self::updated(function (){
-            self::forgetCache();
+        self::updated(function ($model){
+            self::forgetCache($model);
         });
-        self::deleted(function (){
-            self::forgetCache();
+        self::deleted(function ($model){
+            self::forgetCache($model);
         });
     }
 
-    public static function forgetCache()
+    public static function forgetCache(self $model)
     {
-        Cache::forget(self::CACHE_KEY);
+        Cache::forget(self::CACHE_KEY_PREFIX . $model->project->uuid);
     }
 }

@@ -63,7 +63,7 @@ class Project extends Model
 
     public function published(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->changelogs()->whereDate('published_at', '<=', Carbon::now()->toDateTimeString())->latest('created_at');
+        return $this->changelogs()->with('category')->whereDate('published_at', '<=', Carbon::now()->toDateTimeString())->latest('created_at');
     }
 
     public function getTerminology(): string

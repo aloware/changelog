@@ -4,13 +4,17 @@ const state = {
     categories : [],
     changelog : {
         'id' : null,
-        'title' : 'Title',
-        'body' : 'Content',
+        'title' : '',
+        'body' : '',
         'published_at' : '',
         'category' : ''
     },
     _beforeEditingChangelogCache : null,
-    category : null,
+    category : {
+        label : '',
+        bg_color : '#007bff',
+        text_color : '#fff',
+    },
     _beforeEditingCategoryCache : null,
     showChangelogEditor : false,
     showCategoryEditor : false,
@@ -42,6 +46,8 @@ const actions = {
     async getChangelogs({commit}, projectUuid) {
         const response = await axios.get("/api/" + projectUuid + "/changelogs");
         commit('setChangelogs', response.data);
+
+        return response;
     },
 
     async getPublishedChangelogs({commit}, { vm,  projectUuid, page }) {
@@ -121,19 +127,19 @@ const actions = {
         if (typeof response !== 'undefined' && response.status === 200) {
             commit('resetCategoryData');
             commit('appendCategory', response.data.category);
-        } else if (response.status === 200 && response.data.status === 'error') {
-            return response;
         }
+
+        return response;
     },
 
     async updateCategory({commit, state}, category) {
         const response = await axios.put("/company/category/" + category.id, category);
-        if (response.status === 200) {
+        if (typeof response !== 'undefined' && response.status === 200) {
             commit('resetCategoryData');
-            commit('updateCategory', response.data.changelog);
-        } else if (response.status === 200 && response.data.status === 'error') {
-            return response;
+            commit('updateCategory', response.data.category);
         }
+
+        return response;
     },
 
     async deleteCategory({commit, state}, { vm, category }) {
@@ -199,8 +205,8 @@ const mutations = {
         state.showChangelogEditor = false;
         state.changelog = {
             'id' : null,
-            'title' : 'Title',
-            'body' : 'Content',
+            'title' : '',
+            'body' : '',
             'published_at' : '',
             'category' : '',
             'is_published' : false
@@ -236,7 +242,7 @@ const mutations = {
 
     addCategory :  function(state) {
         state.category = {
-            label : 'New Category',
+            label : '',
             bg_color : '#007bff',
             text_color : '#fff',
         }
@@ -263,7 +269,11 @@ const mutations = {
 
     toggleCategoryEditor : (state) => (state.showCategoryEditor = !state.showCategoryEditor),
     cancelCategoryForm : (state) => {
-        state.category = null;
+        state.category = {
+            label : '',
+            bg_color : '#007bff',
+            text_color : '#fff',
+        };
         state.showCategoryEditor = !state.showCategoryEditor
         if (state._beforeEditingCategoryCache) {
             for (let i = 0; i < state.categories.length; i++) {
@@ -276,7 +286,11 @@ const mutations = {
         }
     },
     resetCategoryData : function(state){
-        state.category = state._beforeEditingCategoryCache = null;
+        state.category = state._beforeEditingCategoryCache = {
+            label : '',
+            bg_color : '#007bff',
+            text_color : '#fff',
+        };
         state.showCategoryEditor = !1
     }
 }

@@ -57,19 +57,23 @@ class ProjectController extends Controller
      *          description="success"
      *     )
      * )
+     * @param Request $request
      * @param $projectUuid
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getPublishedChangelogs($projectUuid): \Illuminate\Http\JsonResponse
+    public function getPublishedChangelogs(Request $request, $projectUuid): \Illuminate\Http\JsonResponse
     {
         $project = Project::where('uuid', $projectUuid)->first();
 
-        //TODO
-//        $changelogs = Cache::rememberForever(Changelog::CACHE_KEY, function() use ($project){
-//            return $project->published()->paginate($project->page_entry_limit);
-//        });
+        if (!$request->has('page')) {
+            $changelogs = Cache::rememberForever(Changelog::CACHE_KEY_PREFIX . $project->uuid, function() use ($project){
+                return $project->published()->paginate($project->page_entry_limit);
+            });
+        } else {
+            $changelogs = $project->published()->paginate($project->page_entry_limit);
+        }
 
-        return response()->json($project->published()->paginate($project->page_entry_limit));
+        return response()->json($changelogs);
     }
 
     public function getPageView($projectSlug)
@@ -212,5 +216,10 @@ class ProjectController extends Controller
         } else {
             //TODO make an avatar logo?
         }
+    }
+
+    public function widget()
+    {
+        return view('project.widget');
     }
 }

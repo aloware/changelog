@@ -47,9 +47,9 @@ Route::middleware('auth')->group(function(){
 
     Route::get('company/{companyId}/categories', [\App\Http\Controllers\CategoryController::class, 'index'])->name('categories');
 
-    Route::get('company/{id}/project/new', [\App\Http\Controllers\ProjectController::class, 'create'])->name('create-project');
+    Route::get('company/{id}/project/add', [\App\Http\Controllers\ProjectController::class, 'create'])->name('create-project');
 
-    Route::post('company/{id}/project/new', [\App\Http\Controllers\ProjectController::class, 'store'])->name('store-project');
+    Route::post('company/{id}/project', [\App\Http\Controllers\ProjectController::class, 'store'])->name('store-project');
 
     Route::put('project/{uuid}', [\App\Http\Controllers\ProjectController::class, 'update'])->name('update-project');
 
@@ -67,3 +67,5 @@ Route::middleware('auth')->group(function(){
 Route::get('{projectSlug}/changelogs', [\App\Http\Controllers\ProjectController::class, 'getPageView'])->name('page-changelogs-view');
 
 Route::get('{projectUuid}/widgets', [\App\Http\Controllers\ProjectController::class, 'getWidgetView'])->name('widget-changelogs-view');
+
+Route::get('/widget', [\App\Http\Controllers\ProjectController::class, 'widget'])->name('widget-config-view');

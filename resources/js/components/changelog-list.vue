@@ -1,32 +1,44 @@
 <template>
     <div class="container mt-5" v-bind:class="{ openEditor : showChangelogEditor }">
-        <div class="row changelogs-container">
-            <div class="col-12">
-                <b-button variant="outline-success" v-on:click="createChangelog" v-if="!showChangelogEditor">
-                    <font-awesome-icon :icon="['fas', 'plus']"/>
-                    Create Changelog
-                </b-button>
-                <b-button variant="outline-success"  v-bind:href="'/project/' + getParsedProjectData.slug + '/settings'" v-if="!showChangelogEditor">
-                    <font-awesome-icon :icon="['fas', 'sliders-h']"/>
-                    Project Settings
-                </b-button>
-                <hr v-if="!showChangelogEditor">
-                <changelog-component :changelog="changelog" v-if="showChangelogEditor && !changelog.id"></changelog-component>
-                <div v-for="(item, index) in changelogs.slice().reverse()" :key="item.id">
-                    <changelog-component :changelog="item"></changelog-component>
+        <b-overlay
+            :show="showOverlay"
+            rounded="sm"
+            :opacity="0.42"
+        >
+            <div class="row changelogs-container">
+                <div class="col-12">
+                    <b-button variant="outline-success" v-on:click="createChangelog" v-if="!showChangelogEditor">
+                        <font-awesome-icon :icon="['fas', 'plus']"/>
+                        Create Changelog
+                    </b-button>
+                    <b-button variant="outline-success"  v-bind:href="'/project/' + getParsedProjectData.slug + '/settings'" v-if="!showChangelogEditor">
+                        <font-awesome-icon :icon="['fas', 'sliders-h']"/>
+                        Project Settings
+                    </b-button>
+                    <hr v-if="!showChangelogEditor">
+                    <changelog-component :changelog="changelog" v-if="showChangelogEditor && !changelog.id"></changelog-component>
+                    <div v-for="(item, index) in changelogs.slice().reverse()" :key="item.id">
+                        <changelog-component :changelog="item"></changelog-component>
+                    </div>
+
+                    <b-card class="text-center" v-if="changelogs.length < 1 && !showChangelogEditor && fetched">
+                        <b-card-text class="text-strong">
+                            Time to start a changelog!
+                        </b-card-text>
+
+                        <b-card-text class="text-muted">
+                            Surely there's much to tell your users about the new things or even updates and fixes in your application.
+                        </b-card-text>
+                    </b-card>
                 </div>
-
-                <b-card class="text-center" v-if="changelogs.length < 1 && !showChangelogEditor">
-                    <b-card-text class="text-strong">
-                        Time to start a changelog!
-                    </b-card-text>
-
-                    <b-card-text class="text-muted">
-                        Surely there's much to tell your users about the new things or even updates and fixes in your application.
-                    </b-card-text>
-                </b-card>
             </div>
-        </div>
+            <template #overlay>
+                <div class="text-center">
+                    <font-awesome-icon :icon="['fas', 'spinner']" spin />
+                    <p id="cancel-label">{{ overlayMessage }}</p>
+                </div>
+            </template>
+        </b-overlay>
         <div>
             <changelog-form-component></changelog-form-component>
         </div>
@@ -43,7 +55,9 @@ export default {
     },
     data : function(){
         return {
-
+            showOverlay : false,
+            overlayMessage : '',
+            fetched : false
         }
     },
     computed : {
@@ -61,7 +75,13 @@ export default {
     mounted() {
         this.setProject(this.getParsedProjectData);
         this.getCategories(this.project.company_id);
-        this.getChangelogs(this.project.uuid);
+        this.overlayMessage = 'Getting your changelogs...';
+        this.showOverlay = true;
+        this.getChangelogs(this.project.uuid).then(response => {
+            this.showOverlay = false;
+            this.overlayMessage = '';
+            this.fetched = true;
+        });
     }
 }
 </script>
@@ -80,5 +100,10 @@ export default {
 
     .openEditor .changelogs-container {
         width: 50vw;
+    }
+
+    .changelogs-container {
+        overflow: hidden;
+        height: 100%;
     }
 </style>
