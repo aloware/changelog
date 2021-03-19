@@ -1,6 +1,11 @@
 <template>
     <div class="container mt-5">
-        <div class="row changelogs-container">
+        <b-overlay
+            :show="showOverlay"
+            rounded="sm"
+            :opacity="0.42"
+        >
+            <div class="row changelogs-container">
             <div class="col-12 changelog-list" v-for="(changelog, index) in changelogs" :key="changelog.id">
 
                 <div class="badge-container">
@@ -18,10 +23,17 @@
                 <div class="changelog-body" v-html="changelog.body"></div>
             </div>
             <div class="col-12 text-center" v-if="pagination && pagination.current_page !== pagination.last_page">
-                <span v-if="loading" class="text-muted"><b-spinner></b-spinner> <br/>Working on previous changelogs...</span>
-                <a href="#" @click="nextPage" class="pt-5 pb-5 text-muted" v-if="!loading">Show previous changelogs</a>
+                <span v-if="gettingNextPage" class="text-muted"><b-spinner></b-spinner> <br/>Working on previous changelogs...</span>
+                <a href="#" @click="nextPage" class="pt-5 pb-5 text-muted" v-if="!gettingNextPage">Show previous changelogs</a>
             </div>
         </div>
+            <template #overlay>
+                <div class="text-center">
+                    <font-awesome-icon :icon="['fas', 'spinner']" spin />
+                    <p id="cancel-label">{{ overlayMessage }}</p>
+                </div>
+            </template>
+        </b-overlay>
     </div>
 </template>
 
@@ -31,18 +43,16 @@ export default {
     name : "PublishedChangelogComponent.vue",
     props : {
         project : String,
-        initial_data : String
     },
     data : function(){
         return {
-            loading : false
+            gettingNextPage : false,
+            showOverlay : false,
+            overlayMessage : ''
         }
     },
     computed : {
         ...mapGetters(['changelogs', 'pagination']),
-        getJsonParsedInitialData : function(){
-            return JSON.parse(this.initial_data);
-        },
         getJsonParsedProject : function()
         {
             return JSON.parse(this.project);
@@ -53,13 +63,22 @@ export default {
         nextPage : function(e){
             let project = this.getJsonParsedProject;
             let nextPage = this.pagination.current_page + 1;
-            this.loading = true;
-            this.$store.dispatch('getPublishedChangelogs', { vm : this, projectUuid : project.uuid, page : nextPage });
+            this.gettingNextPage = true;
+            this.getPublishedChangelogs({ projectUuid : project.uuid, page : nextPage }).then(response => {
+                this.gettingNextPage = false;
+            });
+
             e.preventDefault();
-        }
+        },
+
     },
     mounted() {
-        this.setInitialChangelogsData(this.getJsonParsedInitialData);
+        this.showOverlay = true;
+        this.overlayMessage = 'Preparing your changelogs...';
+        this.getPublishedChangelogs({ projectUuid : this.getJsonParsedProject.uuid } ).then(response => {
+            this.showOverlay = false;
+            this.overlayMessage = '';
+        })
     }
 }
 </script>

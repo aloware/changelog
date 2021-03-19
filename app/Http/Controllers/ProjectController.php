@@ -8,6 +8,7 @@ use App\Models\Changelog;
 use App\Models\FileUpload;
 use App\Models\Project;
 use App\Models\Company;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -64,13 +65,14 @@ class ProjectController extends Controller
     public function getPublishedChangelogs(Request $request, $projectUuid): \Illuminate\Http\JsonResponse
     {
         $project = Project::where('uuid', $projectUuid)->first();
-
         if (!$request->has('page')) {
             $changelogs = Cache::rememberForever(Changelog::CACHE_KEY_PREFIX . $project->uuid, function() use ($project){
-                return $project->published()->paginate($project->page_entry_limit);
+                return $project->published()
+                    ->paginate($project->page_entry_limit);
             });
         } else {
-            $changelogs = $project->published()->paginate($project->page_entry_limit);
+            $changelogs = $project->published()
+                ->paginate($project->page_entry_limit);
         }
 
         return response()->json($changelogs);

@@ -41,7 +41,7 @@
                     </b-navbar-nav>
                 </b-collapse>
             </b-navbar>
-            <published-changelog-page-list-component project="{{ $project }}" initial_data="{{ $project->published()->paginate($project->page_entry_limit)->toJson() }}"></published-changelog-page-list-component>
+            <published-changelog-page-list-component project="{{ $project }}"></published-changelog-page-list-component>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-vue@1.0.4/image-resize-vue.min.js"></script>
         <script src="{{ mix('js/app.js') }}"></script>

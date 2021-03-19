@@ -50,10 +50,10 @@ const actions = {
         return response;
     },
 
-    async getPublishedChangelogs({commit}, { vm,  projectUuid, page }) {
+    async getPublishedChangelogs({commit}, { projectUuid, page }) {
         let nextPage = (typeof page !== 'undefined') ? '?page=' + page : '';
         const response = await axios.get("/api/" + projectUuid + "/published/changelogs" + nextPage);
-        vm.loading = false
+
         if (!page) {
             commit('setChangelogs', response.data.data);
         } else {
@@ -61,6 +61,8 @@ const actions = {
         }
 
         commit('setPaginationData', response.data);
+
+        return response;
     },
 
     async storeChangelog({commit, state}, changelog) {
