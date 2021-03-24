@@ -144,23 +144,6 @@
             </div>
         </div>
         <script>
-            // @see https://docs.headwayapp.co/widget for more configuration options.
-            var HW_config = {
-                selector: ".hw-container", // CSS selector where to inject the badge
-                account:  "7Qbl5J",
-                translations: {
-                    title: "The Changelog",
-                    readMore: "Read more",
-                    labels: {
-                        "new": "News",
-                        "improvement": "Updates",
-                        "fix": "Fixes"
-                    },
-                    footer: "Read more 👉"
-                },
-                //trigger : '.fa-bell'
-            }
-
             let changelog_config = {
                 container : '.cl-container', //optional - insert to the DOM - body
                 uuid : '78b89a57-b805-401d-8f62-de9668a8a968',
@@ -168,12 +151,13 @@
                     // placeholderLabel : 'Release Notes', //link element
                     headerLabel : 'Latest News'
                 },
-                //position : 'cl_bottom',
+                position : {
+                    offsetTop : 10
+                },
                 triggerElement : '.fa-bell'
             }
         </script>
-{{--        <script async src="https://cdn.headwayapp.co/widget.js"></script>--}}
-        <script async src="http://localhost/js/widget.js"></script>
+        <script async src="http://localhost/js/widget.js" id="cl-script"></script>
         <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-vue@1.0.4/image-resize-vue.min.js"></script>
         <script src="{{ mix('js/app.js') }}"></script>
     </body>

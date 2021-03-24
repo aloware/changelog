@@ -101,7 +101,6 @@
                 is_published : false,
                 customToolbar: [
                     [{ 'header': [false, 1, 2, 3, 4, 5, 6, ] }],
-                    [{ 'color': [] }, { 'background': [] }],
                     ['bold', 'italic', 'underline', 'strike'],
                     [{'align': ''}, {'align': 'center'}, {'align': 'right'}, {'align': 'justify'}],
                     [{ 'indent': '-1'}, { 'indent': '+1' }],
@@ -137,7 +136,7 @@
         computed : {
             ...mapGetters(['categories', 'changelog', 'project']),
             published : function(){
-                return (this.changelog && this.changelog.published_at.length > 0)
+                return (this.changelog && this.changelog.published_at && this.changelog.published_at.length > 0)
             }
         },
         methods : {

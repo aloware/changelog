@@ -20,7 +20,7 @@
          uuid : '{{ project.uuid }}'
     }
 &lt;/script&gt;
-&lt;script async src="{{ serverUrl }}/js/widget.js"&gt;&lt;/script&gt;
+&lt;script async src="{{ serverUrl }}/js/widget.js" id="cl-script"&gt;&lt;/script&gt;
                         </code>
                     </pre>
                 </vue-code-highlight>
@@ -42,7 +42,7 @@
         uuid : '{{ project.uuid }}'
     }
 &lt;/script&gt;
-&lt;script async src="{{ serverUrl }}/js/widget.js"&gt;&lt;/script&gt;
+&lt;script async src="{{ serverUrl }}/js/widget.js" id="cl-script"&gt;&lt;/script&gt;
                     </code>
                 </pre>
             </vue-code-highlight>
@@ -66,7 +66,7 @@
         }
     }
 &lt;/script&gt;
-&lt;script async src="{{ serverUrl }}/js/widget.js"&gt;&lt;/script&gt;
+&lt;script async src="{{ serverUrl }}/js/widget.js" id="cl-script"&gt;&lt;/script&gt;
                     </code>
                 </pre>
             </vue-code-highlight>
@@ -87,7 +87,7 @@
         triggerElement : '.fa-bell'
     }
 &lt;/script&gt;
-&lt;script async src="{{ serverUrl }}/js/widget.js"&gt;&lt;/script&gt;
+&lt;script async src="{{ serverUrl }}/js/widget.js" id="cl-script"&gt;&lt;/script&gt;
                     </code>
                 </pre>
             </vue-code-highlight>
@@ -126,7 +126,7 @@
         }
     }
 &lt;/script&gt;
-&lt;script async src="{{ serverUrl }}/js/widget.js"&gt;&lt;/script&gt;
+&lt;script async src="{{ serverUrl }}/js/widget.js" id="cl-script"&gt;&lt;/script&gt;
                     </code>
                 </pre>
             </vue-code-highlight>

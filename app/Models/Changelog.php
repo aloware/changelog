@@ -16,6 +16,7 @@ class Changelog extends Model
     const DEFAULT_BODY = "This is your first change log. Below you can make changes, edit and make it public." ;
 
     const CACHE_KEY_PREFIX = "changelog_";
+    const CACHE_WIDGET_KEY_PREFIX = "changelog_widget_";
 
     protected $casts = [
         //'published_at' => 'timestamp'
@@ -53,5 +54,6 @@ class Changelog extends Model
     public static function forgetCache(self $model)
     {
         Cache::forget(self::CACHE_KEY_PREFIX . $model->project->uuid);
+        Cache::forget(self::CACHE_WIDGET_KEY_PREFIX . $model->project->uuid);
     }
 }

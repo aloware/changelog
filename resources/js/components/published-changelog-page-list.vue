@@ -106,7 +106,7 @@ export default {
     }
 
     div.floating-date {
-        top: 12px;
+        top: 5px;
         left: -976px;
         text-align: right;
         position: absolute;
@@ -129,10 +129,6 @@ export default {
     .changelog-list {
         padding: 10px;
         border-radius: 10px;
-    }
-
-    .changelog-list:hover {
-        background: hsl(240deg 20% 98%);
     }
 
     .changelog-list:not(:last-child) {

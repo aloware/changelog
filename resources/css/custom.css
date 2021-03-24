@@ -37,12 +37,12 @@ body {
     overflow-y: auto !important;
 }
 
-.scrollable::-webkit-scrollbar {
+.scrollable::-webkit-scrollbar{
     width: 5px;
     background: transparent;
 }
 
-.scrollable::-webkit-scrollbar-thumb {
+.scrollable::-webkit-scrollbar-thumb{
     background: #ffa000;
 }
 
@@ -236,5 +236,8 @@ span.widget-badge {
 }
 
 .badge {
-    line-height: 2 !important;
+    line-height: 1.5 !important;
+    padding: 0 0.4em !important;
 }
+
+

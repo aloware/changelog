@@ -11,9 +11,23 @@
 </template>
 
 <script>
+import {mapActions, mapGetters} from "vuex";
+
 export default {
     name: "published-changelog-widget",
-    props : ['changelogs', 'project'],
+    props : ['project', 'changelogs'],
+    computed : {
+        //...mapGetters(['changelogs'])
+    },
+    methods : {
+        ...mapActions(['getPublishedChangelogs']),
+    },
+    mounted() {
+        // this.getPublishedChangelogs({ projectUuid : this.project.uuid, page : null, type : 'widget' } ).then(response => {
+        //     // this.showOverlay = false;
+        //     // this.overlayMessage = '';
+        // });
+    }
 }
 </script>
 

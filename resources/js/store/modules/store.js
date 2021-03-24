@@ -1,4 +1,5 @@
 import axios from "axios";
+import changelog from "../../components/changelog";
 const state = {
     changelogs : [],
     categories : [],
@@ -52,7 +53,8 @@ const actions = {
 
     async getPublishedChangelogs({commit}, { projectUuid, page }) {
         let nextPage = (typeof page !== 'undefined') ? '?page=' + page : '';
-        const response = await axios.get("/api/" + projectUuid + "/published/changelogs" + nextPage);
+
+        const response = await axios.get("/api/" + projectUuid + "/published/changelogs" + nextPage );
 
         if (!page) {
             commit('setChangelogs', response.data.data);
@@ -184,6 +186,10 @@ const mutations = {
     },
 
     addChangelog : function(state){
+        if (state.categories[0]) {
+            state.changelog.category = state.categories[0];
+        }
+
         state.showChangelogEditor = true;
     },
     editChangelog : function(state, changelog){

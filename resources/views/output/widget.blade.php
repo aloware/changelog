@@ -13,7 +13,7 @@
     </head>
     <body>
         <div id="app">
-            <published-changelog-widget-component :project="{{ $project }}" :changelogs="{{ $project->published()->limit($project->widget_entry_limit)->get() }}"></published-changelog-widget-component>
+            <published-changelog-widget-component :project="{{ $project }}" :changelogs="{{ $changelogs }}"></published-changelog-widget-component>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-vue@1.0.4/image-resize-vue.min.js"></script>

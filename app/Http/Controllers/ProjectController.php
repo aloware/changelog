@@ -65,6 +65,7 @@ class ProjectController extends Controller
     public function getPublishedChangelogs(Request $request, $projectUuid): \Illuminate\Http\JsonResponse
     {
         $project = Project::where('uuid', $projectUuid)->first();
+
         if (!$request->has('page')) {
             $changelogs = Cache::rememberForever(Changelog::CACHE_KEY_PREFIX . $project->uuid, function() use ($project){
                 return $project->published()
@@ -92,7 +93,12 @@ class ProjectController extends Controller
             abort(404);
         }
 
-        return view('output.widget')->with('project', $project);
+        $changelogs = Cache::rememberForever(Changelog::CACHE_WIDGET_KEY_PREFIX . $project->uuid, function() use ($project){
+            return $project->published()
+                ->limit($project->widget_entry_limit)->get();
+        });
+
+        return view('output.widget')->with('project', $project)->with('changelogs', $changelogs);
     }
 
     public function create($companyId)

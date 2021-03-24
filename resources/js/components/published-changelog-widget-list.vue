@@ -33,8 +33,4 @@ export default {
     .callout-header h4 {
         font-size: 1rem;
     }
-
-    .date-container {
-        margin-top: 6px;
-    }
 </style>

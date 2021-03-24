@@ -27,3 +27,8 @@ Route::get('/company/{company_id}/categories', [\App\Http\Controllers\CategoryCo
 Route::get('/project/changelog/image/{filename}', [\App\Http\Controllers\ProjectController::class, 'getImage']);
 
 Route::get('/project/{uuid}/logo', [\App\Http\Controllers\ProjectController::class, 'getLogo'])->name('project-logo');
+
+Route::get('/widget.js', function(){
+    $file = __DIR__ . '/../public/js/widget.js';
+    return response()->file($file);
+})->name('widget-js');
