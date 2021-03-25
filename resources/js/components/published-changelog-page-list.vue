@@ -6,27 +6,28 @@
             :opacity="0.42"
         >
             <div class="row changelogs-container">
-            <div class="col-12 changelog-list" v-for="(changelog, index) in changelogs" :key="changelog.id">
+                <div v-for="(changelog, index) in changelogs" :key="changelog.id" class="page-list-container">
+                    <div class="col-12 changelog-list">
 
-                <div class="badge-container">
-                    <b-badge v-bind:style="{ backgroundColor : changelog.category.bg_color, color : changelog.category.text_color }">{{ changelog.category.label }}</b-badge>
-                    <small class="text-muted d-md-none">
-                        <font-awesome-icon :icon="['far', 'clock']" />
-                        <relative-time-component class="inline-date changelog-date" :from_time="changelog.created_at" :humanized="true" :update_interval="60000"></relative-time-component>
-                    </small>
+                        <div class="badge-container">
+                            <b-badge v-bind:style="{ backgroundColor : changelog.category.bg_color, color : changelog.category.text_color }">{{ changelog.category.label }}</b-badge>
+                            <small class="text-muted">
+                                <font-awesome-icon :icon="['far', 'clock']" />
+                                <relative-time-component class="inline-date changelog-date" :from_time="changelog.created_at" :humanized="true" :update_interval="60000"></relative-time-component>
+                            </small>
+                        </div>
+
+                        <span class="changelog-title">{{ changelog.title }}</span>
+                        <div class="changelog-body" v-html="changelog.body"></div>
+                    </div>
+                    <h2 class="hr-line-text" v-if="index !== changelogs.length -1"><span></span></h2>
                 </div>
-                <div class="floating-date text-muted d-none d-md-block d-md-block">
-                    <font-awesome-icon :icon="['far', 'clock']" />
-                    <relative-time-component class="changelog-date" :from_time="changelog.created_at" :humanized="true" :update_interval="60000"></relative-time-component>
+
+                <div class="col-12 text-center" v-if="pagination && pagination.current_page !== pagination.last_page">
+                    <span v-if="gettingNextPage" class="text-muted"><b-spinner></b-spinner> <br/>Working on previous changelogs...</span>
+                    <a href="#" @click="nextPage" class="pt-5 pb-5 text-muted" v-if="!gettingNextPage">Show previous changelogs</a>
                 </div>
-                <span class="changelog-title">{{ changelog.title }}</span>
-                <div class="changelog-body" v-html="changelog.body"></div>
             </div>
-            <div class="col-12 text-center" v-if="pagination && pagination.current_page !== pagination.last_page">
-                <span v-if="gettingNextPage" class="text-muted"><b-spinner></b-spinner> <br/>Working on previous changelogs...</span>
-                <a href="#" @click="nextPage" class="pt-5 pb-5 text-muted" v-if="!gettingNextPage">Show previous changelogs</a>
-            </div>
-        </div>
             <template #overlay>
                 <div class="text-center">
                     <font-awesome-icon :icon="['fas', 'spinner']" spin />
@@ -133,5 +134,9 @@ export default {
 
     .changelog-list:not(:last-child) {
         margin-bottom: 25px;
+    }
+
+    .page-list-container {
+        width: 100%;
     }
 </style>

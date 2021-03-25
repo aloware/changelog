@@ -20,7 +20,7 @@
          uuid : '{{ project.uuid }}'
     }
 &lt;/script&gt;
-&lt;script async src="{{ serverUrl }}/js/widget.js" id="cl-script"&gt;&lt;/script&gt;
+&lt;script src="{{ serverUrl }}/api/widget.js" id="cl-script"&gt;&lt;/script&gt;
                         </code>
                     </pre>
                 </vue-code-highlight>
@@ -42,7 +42,7 @@
         uuid : '{{ project.uuid }}'
     }
 &lt;/script&gt;
-&lt;script async src="{{ serverUrl }}/js/widget.js" id="cl-script"&gt;&lt;/script&gt;
+&lt;script src="{{ serverUrl }}/api/widget.js" id="cl-script"&gt;&lt;/script&gt;
                     </code>
                 </pre>
             </vue-code-highlight>
@@ -66,7 +66,7 @@
         }
     }
 &lt;/script&gt;
-&lt;script async src="{{ serverUrl }}/js/widget.js" id="cl-script"&gt;&lt;/script&gt;
+&lt;script src="{{ serverUrl }}/api/widget.js" id="cl-script"&gt;&lt;/script&gt;
                     </code>
                 </pre>
             </vue-code-highlight>
@@ -87,7 +87,7 @@
         triggerElement : '.fa-bell'
     }
 &lt;/script&gt;
-&lt;script async src="{{ serverUrl }}/js/widget.js" id="cl-script"&gt;&lt;/script&gt;
+&lt;script src="{{ serverUrl }}/api/widget.js" id="cl-script"&gt;&lt;/script&gt;
                     </code>
                 </pre>
             </vue-code-highlight>
@@ -101,6 +101,7 @@
                 <li><i>uuid</i> (required) - your project uuid.</li>
                 <li><i>container</i> - CSS Selector where the badge can be injected. Please note that skipping this option would make the badge injected into the BODY.</li>
                 <li><i>triggerElement</i> - CSS Selector that would trigger display of the widget. <i>Enabling this option would totally ignore <code>container</code> and <code>placeholderLabel</code> option.</i></li>
+                <li><i>position</i> - see Position below.</li>
                 <li><i>translations</i> - see Translations below.</li>
             </ul>
             <h6>
@@ -126,7 +127,38 @@
         }
     }
 &lt;/script&gt;
-&lt;script async src="{{ serverUrl }}/js/widget.js" id="cl-script"&gt;&lt;/script&gt;
+&lt;script  src="{{ serverUrl }}/api/widget.js" id="cl-script"&gt;&lt;/script&gt;
+                    </code>
+                </pre>
+            </vue-code-highlight>
+
+            <h6>
+                Widget positioning
+            </h6>
+            <hr/>
+            <ul>
+                <li><i>alignment</i> - the widget alignment. <i class="text-muted">options</i> : <code>left</code> and <code>right</code>, <i class="text-muted">default</i> : <code>left</code>.</li>
+                <li><i>drop</i> - option for widget to drop up or down. <i class="text-muted">options</i> : <code>up</code> and <code>down</code>, <i class="text-muted">default</i> : <code>down</code>.</li>
+                <li><i>offsetTop</i> - widget top offset, expected value is integer.</li>
+                <li><i>offsetBottom</i> - widget bottom offset, expected value is integer.</li>
+                <li><i>offsetRight</i> - widget right offset, expected value is integer.</li>
+                <li><i>offsetLeft</i> - widget left offset, expected value is integer.</li>
+            </ul>
+
+            <vue-code-highlight language="javascript" class="basic-code">
+                <pre>
+                    <code>
+&lt;script&gt;
+    let changelog_config = {
+        uuid : '{{ project.uuid }}',
+        triggerElement : '.changelog-placeholder',
+        position : {
+            alignment : 'right',
+            offsetTop : 12,
+        }
+    }
+&lt;/script&gt;
+&lt;script  src="{{ serverUrl }}/api/widget.js" id="cl-script"&gt;&lt;/script&gt;
                     </code>
                 </pre>
             </vue-code-highlight>

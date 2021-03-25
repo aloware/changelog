@@ -4,7 +4,9 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{{ $project->name }} | {{ $project->getTerminology() }}</title>
+        <link rel="shortcut icon" href="{{ asset('img/icon/favicon.ico') }}" type="image/x-icon">
         <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+
     </head>
     <body>
         <div id="app">

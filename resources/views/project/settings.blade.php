@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+@section('title', $project->id ? 'Project Settings | ' . $project->name . ' | ' : 'Add Project | ')
 @section('css')
 
 @endsection

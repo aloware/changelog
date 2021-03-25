@@ -45,7 +45,7 @@
                 </b-form-group>
                 <b-form-group id="published">
                     <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="is_published" name="is_published" v-on:change="handlePublishedAtToggle" :value="published" v-model="is_published">
+                        <input type="checkbox" class="custom-control-input" id="is_published" name="is_published" v-on:change="handlePublishedAtToggle" v-model="is_published">
                         <label class="custom-control-label" for="is_published">Published at</label>
                     </div>
                 </b-form-group>
@@ -135,8 +135,10 @@
         },
         computed : {
             ...mapGetters(['categories', 'changelog', 'project']),
-            published : function(){
-                return (this.changelog && this.changelog.published_at && this.changelog.published_at.length > 0)
+        },
+        watch : {
+            changelog : function(){
+                this.is_published = (this.changelog && this.changelog.published_at && this.changelog.published_at.length > 0);
             }
         },
         methods : {
@@ -188,10 +190,6 @@
             },
             handlePublishedAtToggle : function(e){
                 this.changelog.published_at = (this.is_published) ? this.$moment().format('YYYY-MM-DD') : '';
-
-
-                //console.log(this.$moment().format('YYYY-MM-DD'), this.$moment((this.changelog.published_at)).format('YYYY-MM-DD'))
-                //this.changelog.published_at = !this.$moment().format('YYYY-MM-DD').isSame(this.$moment((this.changelog.published_at)).format('YYYY-MM-DD')) && this.is_published ? this.$moment().format('YYYY-MM-DD') : null;
             }
         }
     }

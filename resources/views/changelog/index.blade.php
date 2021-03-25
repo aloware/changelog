@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+@section('title', 'Changelogs | ' . $project->name . ' | ')
 @section('css')
 
 @endsection

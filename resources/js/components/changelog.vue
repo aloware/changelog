@@ -12,14 +12,14 @@
         <h4 data-v-5573eef4="" class="card-title mt-2 changelog-title">{{ changelog.title || 'Title' }} </h4>
         <p v-html="changelog.body || 'Content'" class="mt-2 changelog-body"></p>
 
-        <div class="footer-container">
+        <div class="footer-container" v-if="!showChangelogEditor">
             <div></div>
             <b-button-group>
-                <b-button variant="primary" size="sm" v-if="!showChangelogEditor" v-on:click="editAction">
+                <b-button variant="primary" size="sm" v-on:click="editAction">
                     <font-awesome-icon :icon="['fas', 'pencil-alt']" />
                     Edit
                 </b-button>
-                <b-button variant="danger" size="sm" v-if="!showChangelogEditor" v-on:click="deleteAction">
+                <b-button variant="danger" size="sm" v-on:click="deleteAction">
                     <b-spinner small v-if="deletionInProgress" ></b-spinner>
                     <font-awesome-icon :icon="['fas', 'trash']" v-if="!deletionInProgress" />
                     Delete
