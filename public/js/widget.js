@@ -170,7 +170,7 @@ ChangelogWidget.prototype.setWidgetPosition = function(ownerElement){
     //set drop
     switch (this.options.position.drop) {
         case 'up':
-            top = this.elements.placeholderContainer.offsetTop - this.iframeContainer.offsetHeight;
+            top = clientRects.top - this.iframeContainer.offsetHeight;
             break;
         case 'down':
         default:
