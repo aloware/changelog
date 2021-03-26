@@ -13,11 +13,14 @@
                 >
                     <b-form-input
                         id="title"
-                        v-model="changelog.title"
+                        v-model="$v.changelog.title.$model"
+                        :state = "validateState('title')"
                         type="text"
                         placeholder="Title"
-                        required
                     ></b-form-input>
+                    <b-form-invalid-feedback id="name-live-feedback" v-if="!$v.changelog.title.required">
+                        Give this changelog a title.
+                    </b-form-invalid-feedback>
                 </b-form-group>
 
                 <b-form-group id="input-group-comment">
@@ -26,22 +29,30 @@
                         :customModules="customModulesForEditor"
                         :editorOptions="editorSettings"
                         @image-added="handleImageAdded"
-                        v-model="changelog.body" :editorToolbar="customToolbar"
+                        v-model="$v.changelog.body.$model"
+                        :state = "validateState('body')"
+                        :editorToolbar="customToolbar"
                         placeholder="Content">
                     </vue-editor>
+                    <b-form-invalid-feedback id="name-live-feedback" v-if="!$v.changelog.body.required">
+                        Changelog body is required.
+                    </b-form-invalid-feedback>
                 </b-form-group>
 
                 <b-form-group id="input-group-3" label="Category:" label-for="changelog_category">
                     <b-form-select
                         id="changelog_category"
-                        v-model="changelog.category"
-                        required
+                        v-model="$v.changelog.category.$model"
+                        :state = "validateState('category')"
                     >
                         <option v-for="category in categories" v-bind:value="category">
                             {{ category.label }}
                         </option>
 
                     </b-form-select>
+                    <b-form-invalid-feedback id="name-live-feedback" v-if="!$v.changelog.category.required">
+                        Select a category for this changelog.
+                    </b-form-invalid-feedback>
                 </b-form-group>
                 <b-form-group id="published">
                     <div class="custom-control custom-switch">
@@ -84,7 +95,7 @@
 <script>
     import { mapActions, mapGetters } from 'vuex'
     import { validationMixin } from 'vuelidate'
-    import { required, minLength, maxLength } from 'vuelidate/lib/validators'
+    import { required } from 'vuelidate/lib/validators'
     import { VueEditor } from 'vue2-editor'
     import { ImageDrop } from 'quill-image-drop-module'
     import ImageResize from 'quill-image-resize-module'
@@ -128,9 +139,9 @@
         },
         validations : {
             changelog : {
-                name : { required },
+                title : { required },
                 body : { required },
-                category_id : { required },
+                category : { required },
             }
         },
         computed : {
@@ -147,15 +158,14 @@
                 this.resetChangelog();
             },
             validateState(input){
-                // const { $dirty, $error } = this.$v.changelog[input];
-                //
-                // return $dirty ? !$error : null;
+                const { $dirty, $error } = this.$v.changelog[input];
+                return $dirty ? !$error : null;
             },
             submitForm(){
-                // this.$v.changelog.$touch();
-                // if (this.$v.changelog.$anyError) {
-                //     return;
-                // }
+                this.$v.changelog.$touch();
+                if (this.$v.changelog.$anyError) {
+                    return;
+                }
                 let _this = this;
                 this.submissionInProgress = true;
                 if (this.changelog.id) {

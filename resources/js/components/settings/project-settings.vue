@@ -1,28 +1,33 @@
 <template>
     <div>
         <div class="heading-container">
-            <h5 v-if="project.id">Project Settings</h5>
-            <h5 v-if="!project.id">New Project</h5>
+            <div class="heading-title">
+                <h5 v-if="project.id">Project Settings</h5>
+                <h5 v-if="!project.id">Add Project</h5>
+            </div>
+
+            <b-button variant="primary" v-if="project.id" v-bind:href="'/projects/' + project.slug + '/changelogs'">
+                Changelogs
+            </b-button>
         </div>
         <hr/>
 
         <b-form @submit.stop.prevent="submitForm" class="mb-5">
-            <b-form-group label="Name">
+            <b-form-group label="Name *">
                 <b-form-input
-                    v-model="project.name"
                     placeholder="Name of this project"
+                    v-model="project.name"
                     required
                 ></b-form-input>
             </b-form-group>
 
-            <b-form-group label="URL">
+            <b-form-group label="URL *" description="e.g. http://www.your-domain.com">
                 <b-form-input
-                    v-model="project.url"
                     placeholder="URL of this project"
+                    v-model="project.url"
                     required
                 ></b-form-input>
             </b-form-group>
-
 
             <b-form-group label="Logo" v-if="project.id">
                 <b-card
@@ -122,9 +127,13 @@
 import VSwatches from 'vue-swatches'
 import 'vue-swatches/dist/vue-swatches.css'
 import AvatarCropper from "vue-avatar-cropper"
+import { validationMixin } from 'vuelidate'
+import { required, url } from 'vuelidate/lib/validators'
+import {error_handling_mixin} from "../../mixins";
 
 export default {
     name: "project-settings",
+    mixins : [validationMixin, error_handling_mixin],
     props : {
         project_data : String,
         company_id : String
@@ -149,9 +158,24 @@ export default {
             this.projectLogo = '/api/project/' + this.project.uuid + '/logo';
         }
     },
+    validations : {
+        project : {
+            name : { required },
+            url : { required, url },
+        }
+    },
     methods : {
+        validateState(input){
+            const { $dirty, $error } = this.$v.project[input];
+            return $dirty ? !$error : null;
+        },
         submitForm : function()
         {
+            // this.$v.project.$touch();
+            // if (this.$v.project.$anyError) {
+            //     return;
+            // }
+
             if (this.project.id) {
                 this.updateProject();
             } else {
@@ -165,10 +189,11 @@ export default {
                 if (response.data.status === 'success') {
                     window.location.href = '/projects/' + response.data.project.slug + '/changelogs'
                 } else {
-                    this.$toastr.e("Error", response.data.message);
+                    this.handleErrors(response)
+
                 }
             }).catch(error => {
-                this.$toastr.e("Error", 'An error was encountered while processing your request. Please try again.');
+                this.handleSubmissionFailure(error);
             }).then(() => {
                 this.submissionInProgress = false;
             });
@@ -179,10 +204,10 @@ export default {
                 if (response.data.status === 'success') {
                     this.$toastr.s("Success", response.data.message);
                 } else {
-                    this.$toastr.e("Error", response.data.message);
+                    this.handleErrors(response);
                 }
             }).catch(error => {
-                this.$toastr.e("Error", 'An error was encountered while processing your request. Please try again.');
+                this.handleSubmissionFailure(error);
             }).then(() => {
                 this.submissionInProgress = false;
             });
@@ -216,5 +241,8 @@ export default {
     .heading-container {
         display: flex;
         justify-content: space-between;
+    }
+    div.heading-title {
+        margin-top: 6px;
     }
 </style>

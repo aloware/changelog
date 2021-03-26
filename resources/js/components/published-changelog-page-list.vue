@@ -20,7 +20,7 @@
                         <span class="changelog-title">{{ changelog.title }}</span>
                         <div class="changelog-body" v-html="changelog.body"></div>
                     </div>
-                    <h2 class="hr-line-text" v-if="index !== changelogs.length -1"><span></span></h2>
+                    <h2 class="hr-line-text"><span></span></h2>
                 </div>
 
                 <div class="col-12 text-center" v-if="pagination && pagination.current_page !== pagination.last_page">

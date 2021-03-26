@@ -53,7 +53,12 @@ class Changelog extends Model
 
     public static function forgetCache(self $model)
     {
-        Cache::forget(self::CACHE_KEY_PREFIX . $model->project->uuid);
-        Cache::forget(self::CACHE_WIDGET_KEY_PREFIX . $model->project->uuid);
+        self::forgetCacheByProjectUuid($model->project->uuid);
+    }
+
+    public static function forgetCacheByProjectUuid($uuid)
+    {
+        Cache::forget(self::CACHE_KEY_PREFIX . $uuid);
+        Cache::forget(self::CACHE_WIDGET_KEY_PREFIX . $uuid);
     }
 }

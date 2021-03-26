@@ -129,6 +129,10 @@ class ProjectController extends Controller
 
         if (\auth()->user()->can('update', $project)) {
             $project = $this->updateProject($request->validated(), $project);
+
+            //need to clear changelog cache when project settings is updated as page limit changes won't take effect because of cached changelog data
+            Changelog::forgetCacheByProjectUuid($project->uuid);
+
             return response()->json(['status' => 'success', 'message' => 'Project has been successfully updated.', 'project' => $project]);
         } else {
             return $this->handleUnauthorizedJsonResponse();

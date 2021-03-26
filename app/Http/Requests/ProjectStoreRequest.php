@@ -38,7 +38,7 @@ class ProjectStoreRequest extends FormRequest
                 'exists:companies,id'
             ],
             //'logo' => 'string',
-            'url' => 'string',
+            'url' => 'required|url',
             'page_entry_limit' => 'integer',
             'widget_entry_limit' => 'integer',
             'terminology' => [

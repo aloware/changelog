@@ -3,12 +3,15 @@
              @hidden="resetModal"
              @ok="handleOk">
         <b-form @submit.stop.prevent="submitForm">
-            <b-form-group label="Label">
+            <b-form-group label="Label *">
                 <b-form-input
-                    v-model="category.label"
+                    v-model="$v.category.label.$model"
                     placeholder="Label"
-                    required
+                    :state = "validateState('label')"
                 ></b-form-input>
+                <b-form-invalid-feedback id="name-live-feedback" v-if="!$v.category.label.required">
+                    Give this category a label.
+                </b-form-invalid-feedback>
             </b-form-group>
             <b-form-row>
                 <b-col>
@@ -56,10 +59,12 @@
     import 'vue-swatches/dist/vue-swatches.css'
     import { mapGetters, mapActions } from 'vuex'
     import { error_handling_mixin } from '../mixins'
+    import { validationMixin } from 'vuelidate'
+    import { required } from "vuelidate/lib/validators";
 
     export default {
         name: "CategoryFormComponent",
-        mixins: [error_handling_mixin],
+        mixins: [validationMixin, error_handling_mixin],
         props : {
             companyid : String,
         },
@@ -75,9 +80,23 @@
                 submissionInProgress : false
             }
         },
+        validations : {
+            category : {
+                label : { required },
+            }
+        },
         methods : {
             ...mapActions(['storeCategory', 'updateCategory']),
+            validateState(input){
+                const { $dirty, $error } = this.$v.category[input];
+                return $dirty ? !$error : null;
+            },
             submitForm : function(){
+                this.$v.category.$touch();
+                if (this.$v.category.$anyError) {
+                    return;
+                }
+
                 this.submissionInProgress = true;
                 if (this.category.id) {
                     this.updateCategory(this.category).then(response => {
