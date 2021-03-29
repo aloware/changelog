@@ -37,7 +37,17 @@ class CategoryController extends Controller
 
     public function index($companyId)
     {
-        return view('category.index')->with('company', Company::find($companyId));
+        $company = Company::find($companyId);
+        if (!$company) {
+            abort(404);
+        }
+
+        if (\auth()->user()->can('view', $company)) {
+            return view('category.index')->with('company', $company);
+        }
+        else {
+            abort(403);
+        }
     }
 
     /**

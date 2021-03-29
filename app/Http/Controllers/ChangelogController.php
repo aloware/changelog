@@ -18,6 +18,12 @@ class ChangelogController extends Controller
     public function index($slug)
     {
         $project = Project::where('slug', $slug)->first();
+
+        if (!$project) {
+            abort(404);
+        }
+
+
         return view('changelog.index')->with('user', Auth::user())->with('project', $project);
     }
 

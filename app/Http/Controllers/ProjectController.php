@@ -82,6 +82,11 @@ class ProjectController extends Controller
     public function getPageView($projectSlug)
     {
         $project = Project::where('slug', $projectSlug)->first();
+
+        if (!$project) {
+            abort(404);
+        }
+
         return view('output.page')->with('project', $project);
     }
 
@@ -181,6 +186,10 @@ class ProjectController extends Controller
     {
         $project =  Project::where('slug', $projectSlug)->first();
 
+        if (!$project) {
+            abort(404);
+        }
+
         return view('project.settings')
             ->with('project', $project)
             ->with('user', Auth::user());
@@ -211,7 +220,7 @@ class ProjectController extends Controller
             $project->save();
 
             $request->file('file')->storeAs($project->uuid . '/logo', $filename, 'public');
-            return response()->json(['url' => '/api/project/'. $project->uuid .'/logo/' . $filename]);
+            return response()->json(['url' => '/api/project/'. $project->uuid .'/logo?filename='.$filename]);
         }
 
         return response()->json(['status' => 'error', 'message' => 'No file found.']);
