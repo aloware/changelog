@@ -100,7 +100,7 @@
     import { ImageDrop } from 'quill-image-drop-module'
     import ImageResize from 'quill-image-resize-module'
     import { error_handling_mixin } from '../mixins'
-
+    import changelogApi from '../api'
     export default {
         name: "ChangelogFormComponent",
         mixins: [validationMixin, error_handling_mixin],
@@ -169,16 +169,20 @@
                 let _this = this;
                 this.submissionInProgress = true;
                 if (this.changelog.id) {
-                    this.updateChangelog(this.changelog)
-                        .then(function(response){
-                            _this.submissionInProgress = false;
-                            _this.handleErrors(response);
+                    this.updateChangelog(this.changelog).then(response => {
+                        _this.responseCallback(response);
                     });
                 } else {
                     this.storeChangelog(this.changelog).then(response => {
-                        _this.submissionInProgress = false;
-                        _this.handleErrors(response);
+                        _this.responseCallback(response);
                     });
+                }
+            },
+            responseCallback : function(response){
+                this.submissionInProgress = false;
+                this.$v.$reset();
+                if (response.status === 200 && response.data.status === 'error') {
+                    this.handleErrors(response);
                 }
             },
             handleImageAdded : function(file, Editor, cursorLocation, resetUploader){
@@ -186,7 +190,8 @@
                 formData.append('image', file);
                 this.showOverlay = true;
                 this.overlayMessage = 'Uploading...';
-                axios.post( '/project/'+ this.project.uuid +'/changelogs/upload/image', formData).then(response => {
+
+                changelogApi.changelog.uploadImage(this.project.uuid, formData).then(response => {
                     let url = response.data.url;
                     Editor.insertEmbed(cursorLocation, 'image', url);
                     resetUploader();

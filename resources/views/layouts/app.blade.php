@@ -62,12 +62,13 @@
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                     @foreach(Auth::user()->company->projects as $item)
-                                        <a class="dropdown-item @if(isset($project) && $project->id == $item->id) active @endif" href="{{ route('project-changelogs-view', ['slug' => $item->slug]) }}">{{ $item->name }}</a>
+                                        <a class="dropdown-item @if(isset($project) && $project->id == $item->id) active @endif" href="{{ route('project-changelogs-view', ['uuid' => $item->uuid]) }}">{{ $item->name }}</a>
                                     @endforeach
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{{ route('create-project', ['id' => Auth::user()->company->id]) }}">Add Project</a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{{ route('categories', ['companyId' => Auth::user()->company->id]) }}">Categories</a>
+                                    <a class="dropdown-item" href="{{ route('users', ['companyId' => Auth::user()->company->id]) }}">Team Management</a>
 {{--                                    <a class="dropdown-item" href="{{ route('project-changelogs-view', ['app_name' => $item->name]) }}">Settings</a>--}}
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item text-muted" href="{{ route('logout') }}"

@@ -79,9 +79,9 @@ class ProjectController extends Controller
         return response()->json($changelogs);
     }
 
-    public function getPageView($projectSlug)
+    public function getPageView($uuid)
     {
-        $project = Project::where('slug', $projectSlug)->first();
+        $project = Project::where('uuid', $uuid)->first();
 
         if (!$project) {
             abort(404);
@@ -119,7 +119,7 @@ class ProjectController extends Controller
 
         try {
             $project = $this->addProject($request->validated(), $company->id);
-            return response()->json(['status' => 'success', 'message' => 'project has been successfully created.', 'project' => $project]);
+            return response()->json(['status' => 'success', 'message' => 'project has been successfully created.', 'redirectTo' => route('project-changelogs-view', ['uuid' => $project->uuid])]);
         } catch (\Exception $e) {
             return $this->handleUnauthorizedJsonResponse();
         }
@@ -142,6 +142,22 @@ class ProjectController extends Controller
         } else {
             return $this->handleUnauthorizedJsonResponse();
         }
+    }
+
+    public function destroy($uuid): \Illuminate\Http\JsonResponse
+    {
+        $project = Project::where('uuid', $uuid)->first();
+        if ($project) {
+            try {
+                $project->delete();
+                $response = ['status' => 'success', 'message' => 'Project has been successfully deleted.', 'redirectTo' => url('/home')];
+
+            } catch (\Exception $e) {
+                $response = ['status' => 'error', 'message' => 'Unable to delete project.'];
+            }
+        }
+
+        return response()->json($response ?? ['status' => 'error', 'message' => 'Project not found']);
     }
 
     public function getImage($filename): \Symfony\Component\HttpFoundation\BinaryFileResponse
@@ -182,9 +198,9 @@ class ProjectController extends Controller
         return response()->json(['status' => 'error', 'message' => 'No file found.']);
     }
 
-    public function settings($projectSlug)
+    public function settings($uuid)
     {
-        $project =  Project::where('slug', $projectSlug)->first();
+        $project =  Project::where('uuid', $uuid)->first();
 
         if (!$project) {
             abort(404);

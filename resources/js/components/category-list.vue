@@ -17,9 +17,9 @@
                         <font-awesome-icon :icon="['fas', 'pencil-alt']" />
                         Edit
                     </b-button>
-                    <b-button variant="danger" size="sm" v-on:click="deleteCategory(category, index)" :disabled="deletionInProgress && deleteButtonIndexClicked === index">
+                    <b-button variant="danger" size="sm" v-on:click="removeCategory(category, index)" :disabled="deletionInProgress && deleteButtonIndexClicked === index">
                         <b-spinner small v-if="deletionInProgress && deleteButtonIndexClicked === index"></b-spinner>
-                        <font-awesome-icon :icon="['fas', 'trash']" v-if="!deletionInProgress"/>
+                        <font-awesome-icon :icon="['fas', 'trash']" v-if="deleteButtonIndexClicked !== index"/>
                         Delete
                     </b-button>
                 </b-button-group>
@@ -57,11 +57,10 @@
                 this.$bvModal.show('category-form-modal')
             },
             editCategory : function(category){
-                this.$store.state.category = category;
                 this.$store.commit('editCategory', category )
                 this.$bvModal.show('category-form-modal')
             },
-            deleteCategory : function(category, index){
+            removeCategory : function(category, index){
                 this.$confirm({
                     message : 'Are you sure you want to delete this category?',
                     button: {
@@ -72,7 +71,12 @@
                         if (confirm) {
                             this.deleteButtonIndexClicked = index
                             this.deletionInProgress = !0
-                            this.$store.dispatch('deleteCategory', { vm : this, category : category })
+                            this.deleteCategory(category).then(response => {
+                                if (response.status === 200 && response.data.status === 'error') {
+                                    this.$toastr.e("Error", response.data.message);
+                                    this.deletionInProgress = !1;
+                                }
+                            })
                         }
                     }
                 });

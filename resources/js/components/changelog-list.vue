@@ -8,17 +8,17 @@
             <div class="row changelogs-container">
                 <div class="col-12">
                     <div class="module-heading">
-                        <h5>{{ getHeaderLabel }}</h5>
+                        <h5 class="mt-3">{{ getHeaderLabel }}</h5>
                         <div class="action-buttons" v-if="!showChangelogEditor">
                             <b-button variant="primary" v-on:click="createChangelog">
                                 <font-awesome-icon :icon="['fas', 'plus']"/>
                                 Create Changelog
                             </b-button>
                             <b-dropdown id="dropdown-1" text="Options" class="m-md-2" right>
-                                <b-dropdown-item v-bind:href="'/project/' + getParsedProjectData.slug + '/settings'">
+                                <b-dropdown-item v-bind:href="'/project/' + getParsedProjectData.uuid + '/settings'">
                                     <font-awesome-icon :icon="['fas', 'cog']"/>
                                     Project Settings</b-dropdown-item>
-                                <b-dropdown-item v-bind:href="'/' + getParsedProjectData.slug + '/changelogs'" target="_blank">
+                                <b-dropdown-item v-bind:href="'/' + getParsedProjectData.uuid + '/changelogs'" target="_blank">
                                     <font-awesome-icon :icon="['fas', 'eye']"/>
                                     View Public Page</b-dropdown-item>
                             </b-dropdown>
@@ -92,7 +92,7 @@ export default {
         }
     },
     methods : {
-        ...mapActions(['getChangelogs', 'addChangelog', 'toggleEditor', 'getCategories', 'setProject']),
+        ...mapActions(['getChangelogs', 'addChangelog', 'toggleChangelogEditor', 'getCategories', 'setProject']),
         createChangelog : function(){
             this.addChangelog();
         }
