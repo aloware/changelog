@@ -145,8 +145,8 @@
         </div>
         <script>
             let changelog_config = {
-                container : '.cl-container', //optional - insert to the DOM - body
-                uuid : '78b89a57-b805-401d-8f62-de9668a8a968',
+                //container : '.cl-container', //optional - insert to the DOM - body
+                uuid : '768a4992-c556-415b-a388-fb0dddedfe60',
                 translations : {
                     // placeholderLabel : 'Release Notes', //link element
                     headerLabel : 'Latest News'
@@ -157,7 +157,7 @@
                 triggerElement : '.fa-bell'
             }
         </script>
-        <script async src="http://localhost/js/widget.js" id="cl-script"></script>
+        <script src="http://localhost/api/widget.js" id="cl-script"></script>
         <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-vue@1.0.4/image-resize-vue.min.js"></script>
         <script src="{{ mix('js/app.js') }}"></script>
     </body>

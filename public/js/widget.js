@@ -137,7 +137,12 @@ ChangelogWidget.prototype.onFrameLoad = function(e){
 }
 
 ChangelogWidget.prototype.toggle = function(e){
-    this.isVisible ? this.hideIframe() : this.showIframe(e);
+    if (this.isVisible) {
+        this.hideIframe()
+    } else {
+        this.showIframe(e)
+    }
+    e.stopImmediatePropagation();
 }
 
 ChangelogWidget.prototype.hideIframe = function(){
