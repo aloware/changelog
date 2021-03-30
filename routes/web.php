@@ -27,7 +27,7 @@ Auth::routes();
 Route::middleware('auth')->group(function(){
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-    Route::get('projects/{slug}/changelogs', [\App\Http\Controllers\ChangelogController::class, 'index'])->name('project-changelogs-view');
+    Route::get('projects/{uuid}/changelogs', [\App\Http\Controllers\ChangelogController::class, 'index'])->name('project-changelogs-view');
 
     Route::post('project/{project_uuid}/changelogs', [\App\Http\Controllers\ChangelogController::class, 'store'])->name('store-changelogs');
 
@@ -37,7 +37,7 @@ Route::middleware('auth')->group(function(){
 
     Route::post('project/{project_uuid}/changelogs/upload/image', [\App\Http\Controllers\ProjectController::class, 'uploadImage'])->name('changelogs-image-upload');
 
-    Route::get('project/{project_slug}/settings', [\App\Http\Controllers\ProjectController::class, 'settings'])->name('project-settings');
+    Route::get('project/{uuid}/settings', [\App\Http\Controllers\ProjectController::class, 'settings'])->name('project-settings');
 
     Route::post('company/{companyId}/category', [\App\Http\Controllers\CategoryController::class, 'store'])->name('store-category');
 
@@ -57,15 +57,25 @@ Route::middleware('auth')->group(function(){
 
     Route::post('project/{uuid}/logo', [\App\Http\Controllers\ProjectController::class, 'uploadLogo'])->name('upload-project-logo');
 
+    Route::get('company/{companyId}/users', [\App\Http\Controllers\UserController::class, 'index'])->name('users');
+
+    Route::post('/user', [\App\Http\Controllers\UserController::class, 'store'])->name('store-user');
+
+    Route::delete('/user/{id}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('delete-user');
+
     Route::get('/test', function (){
         return view('welcome');
-    })->name('upload-project-logo');
+    })->name('widget-test');
 
 });
 
 
-Route::get('{projectSlug}/changelogs', [\App\Http\Controllers\ProjectController::class, 'getPageView'])->name('page-changelogs-view');
+Route::get('{projectUuid}/changelogs', [\App\Http\Controllers\ProjectController::class, 'getPageView'])->name('page-changelogs-view');
 
 Route::get('{projectUuid}/widgets', [\App\Http\Controllers\ProjectController::class, 'getWidgetView'])->name('widget-changelogs-view');
 
 Route::get('/widget', [\App\Http\Controllers\ProjectController::class, 'widget'])->name('widget-config-view');
+
+Route::get('/user/{id}/set-password', [\App\Http\Controllers\UserController::class, 'setPassword'])->name('set-user-password-view');
+
+Route::post('/user/{id}/set-password', [\App\Http\Controllers\UserController::class, 'updatePassword'])->name('set-user-password');

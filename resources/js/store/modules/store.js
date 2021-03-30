@@ -1,5 +1,4 @@
-import axios from "axios";
-import changelog from "../../components/changelog";
+import changelogApi from '../../api'
 const state = {
     changelogs : [],
     categories : [],
@@ -19,9 +18,15 @@ const state = {
     _beforeEditingCategoryCache : null,
     showChangelogEditor : false,
     showCategoryEditor : false,
-    projectuuid : '',
     project : null,
-    pagination : null
+    pagination : null,
+
+    users : [],
+    user : {
+        first_name : '',
+        last_name : '',
+        email : ''
+    }
 }
 const getters = {
     categories : (state) => state.categories,
@@ -31,30 +36,25 @@ const getters = {
     changelogs : (state) => state.changelogs,
     changelog : (state) => state.changelog,
     showChangelogEditor : (state) => state.showChangelogEditor,
-    projectuuid : (state) => state.projectuuid,
     project : (state) => state.project,
     rawChangelog : (state) => state.rawChangelog,
     pagination : (state) => state.pagination,
     showCategoryEditor : (state) => state.showCategoryEditor,
+    users : (state) => state.users,
+    user : (state) => state.user,
 
 }
 const actions = {
-    async getCategories({commit}, companyId) {
-        const response = await axios.get("/api/company/" + companyId + "/categories");
-        commit('setCategories', response.data);
-    },
-
     async getChangelogs({commit}, projectUuid) {
-        const response = await axios.get("/api/" + projectUuid + "/changelogs");
+        const response = await changelogApi.changelog.index(projectUuid);
         commit('setChangelogs', response.data);
-
         return response;
     },
 
     async getPublishedChangelogs({commit}, { projectUuid, page }) {
         let nextPage = (typeof page !== 'undefined') ? '?page=' + page : '';
 
-        const response = await axios.get("/api/" + projectUuid + "/published/changelogs" + nextPage );
+        const response = await changelogApi.changelog.published(projectUuid, nextPage);
 
         if (!page) {
             commit('setChangelogs', response.data.data);
@@ -69,33 +69,35 @@ const actions = {
 
     async storeChangelog({commit, state}, changelog) {
         changelog.category_id = changelog.category.id
-        const response = await axios.post("/project/" + state.project.uuid + "/changelogs", changelog);
+        const response = await changelogApi.changelog.store(state.project.uuid, changelog);
+
         if (typeof response !== 'undefined' && response.status === 200) {
             commit('resetChangelog');
             commit('storeChangelog', response.data.changelog);
-        } else if (response.status === 200 && response.data.status === 'error') {
-            return response;
         }
+
+        return response;
     },
 
     async updateChangelog({commit, state}, changelog) {
         changelog.category_id = changelog.category.id
-        const response = await axios.put("/project/changelogs/" + changelog.id, changelog);
+        const response = await changelogApi.changelog.update(changelog.id, changelog);
+
         if (response.status === 200) {
             commit('resetChangelog');
             commit('updateChangelog', response.data.changelog);
-        } else if (response.status === 200 && response.data.status === 'error') {
-            return response;
         }
+
+        return response;
     },
 
     async deleteChangelog({commit, state}, changelog) {
-        const response = await axios.delete("/project/changelogs/" + changelog.id);
+        const response = await changelogApi.changelog.delete(changelog.id);
         if (response.status === 200 && response.data.status === 'success') {
           commit('deleteChangelog', changelog);
-        } else if (response.status === 200 && response.data.status === 'error') {
-          return response;
         }
+
+        return response;
     },
 
     setInitialChangelogsData({ commit }, data) {
@@ -111,11 +113,8 @@ const actions = {
         commit('editChangelog', changelog);
     },
 
-    toggleEditor({commit}) {
-        commit('setEditorVisibility');
-    },
-    setProjectUuid({commit}, projectuuid) {
-        commit('setProjectUuid', projectuuid);
+    toggleChangelogEditor({commit}) {
+        commit('setChangelogEditorVisibility');
     },
 
     setProject({commit}, project) {
@@ -126,10 +125,15 @@ const actions = {
         commit('resetChangelog');
     },
 
+    async getCategories({commit}, companyId) {
+        const response = await changelogApi.category.index(companyId);
+        commit('setCategories', response.data);
+    },
+
     async storeCategory({commit, state}, category) {
-        const response = await axios.post("/company/"+ category.company_id +"/category", category);
+        const response = await changelogApi.category.store(category.company_id, category);
         if (typeof response !== 'undefined' && response.status === 200) {
-            commit('resetCategoryData');
+            commit('resetCategoryData', state);
             commit('appendCategory', response.data.category);
         }
 
@@ -137,7 +141,7 @@ const actions = {
     },
 
     async updateCategory({commit, state}, category) {
-        const response = await axios.put("/company/category/" + category.id, category);
+        const response = await changelogApi.category.update(category.id, category);
         if (typeof response !== 'undefined' && response.status === 200) {
             commit('resetCategoryData');
             commit('updateCategory', response.data.category);
@@ -146,16 +150,33 @@ const actions = {
         return response;
     },
 
-    async deleteCategory({commit, state}, { vm, category }) {
-        const response = await axios.delete("/company/category/" + category.id);
+    async deleteCategory({commit, state},category ) {
+        const response = await changelogApi.category.delete(category.id);
+
         if (response.status === 200 && response.data.status === 'success') {
             commit('deleteCategory', category);
-            vm.deletionInProgress = !1;
-        } else if (response.status === 200 && response.data.status === 'error') {
-            vm.$toastr.e("Error", response.data.message);
-            vm.deletionInProgress = !1;
         }
+
+        return response;
     },
+
+    async storeUser({commit, state}, user) {
+        const response = await changelogApi.user.store(user);
+        if (typeof response !== 'undefined' && response.status === 200) {
+            commit('appendUser', response.data.user);
+        }
+
+        return response;
+    },
+
+    async deleteUser({commit, state}, user) {
+        const response = await changelogApi.user.delete(user.id);
+        if (typeof response !== 'undefined' && response.status === 200) {
+            commit('removeUser', user);
+        }
+
+        return response;
+    }
 }
 
 const mutations = {
@@ -206,8 +227,7 @@ const mutations = {
         state.showChangelogEditor = !0;
     },
 
-    setEditorVisibility : (state) => (state.showChangelogEditor = !state.showChangelogEditor),
-    setProjectUuid : (state, projectuuid) => (state.projectuuid = projectuuid),
+    setChangelogEditorVisibility : (state) => (state.showChangelogEditor = !state.showChangelogEditor),
     setProject : (state, project) => (state.project = project),
     resetChangelog : function(state) {
         state.showChangelogEditor = false;
@@ -260,7 +280,7 @@ const mutations = {
         for (let i = 0; i < state.categories.length; i++) {
             if (state.categories[i].id === category.id) {
                 state.category = state.categories[i]
-                state._beforeEditingCategoryCache = Object.assign({}, state.categories[i])
+                state._beforeEditingCategoryCache = Object.assign({}, state.category)
                 break
             }
         }
@@ -300,6 +320,25 @@ const mutations = {
             text_color : '#fff',
         };
         state.showCategoryEditor = !1
+    },
+
+    setUsers : (state, users) => (state.users = users),
+    combineUsers : (state, users) => (state.users = state.users.concat(users)),
+    appendUser : function(state, user){
+        state.users.push(user);
+        state.user = {
+            first_name : '',
+            last_name : '',
+            email : ''
+        }
+    },
+    removeUser : function(state, user){
+        for (let i = 0; i < state.users.length; i++) {
+            if (state.users[i].id === user.id) {
+                state.users.splice(i, 1);
+                break;
+            }
+        }
     }
 }
 

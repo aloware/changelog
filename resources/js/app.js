@@ -69,6 +69,10 @@ Vue.component('category-form-component', require('./components/category-form.vue
 Vue.component('project-settings-component', require('./components/settings/project-settings.vue').default);
 Vue.component('relative-time-component', require('./components/relative-time.vue').default);
 Vue.component('VueCtkDateTimePicker', VueCtkDateTimePicker);
+
+Vue.component('team-list-component', require('./components/team-list.vue').default);
+Vue.component('team-component', require('./components/team.vue').default);
+Vue.component('team-form-component', require('./components/team-form.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

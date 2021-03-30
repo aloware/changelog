@@ -5,13 +5,14 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use Ramsey\Uuid\Uuid;
 
 class Project extends Model
 {
 
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     const TERMINOLOGY_CHANGELOG = 1;
     const TERMINOLOGY_RELEASE_NOTES = 2;

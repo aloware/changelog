@@ -6,7 +6,7 @@
                 <h5 v-if="!project.id">Add Project</h5>
             </div>
 
-            <b-button variant="primary" v-if="project.id" v-bind:href="'/projects/' + project.slug + '/changelogs'">
+            <b-button variant="primary" v-if="project.id" v-bind:href="'/projects/' + project.uuid + '/changelogs'">
                 Changelogs
             </b-button>
         </div>
@@ -67,8 +67,8 @@
                         <b-input-group-append>
                             <b-button variant="info"
                               v-clipboard:copy="project.uuid"
-                              v-clipboard:success="onCopy"
-                              v-clipboard:error="onError"
+                              v-clipboard:success="onUuidCopy"
+                              v-clipboard:error="onUuidCopyError"
                             ><font-awesome-icon :icon="['far', 'copy']" /></b-button>
                         </b-input-group-append>
                     </b-input-group>
@@ -88,12 +88,12 @@
                 <b-form-group label="URL">
                     <b-input-group>
                         <b-form-input
-                            v-bind:value=" serverUrl + '/'+ project.slug +'/changelogs'"
+                            v-bind:value=" serverUrl + '/'+ project.uuid +'/changelogs'"
                             placeholder="Public page changelog URL"
                             disabled
                         ></b-form-input>
                         <b-input-group-append>
-                            <b-button variant="info" v-bind:href="'/'+ project.slug +'/changelogs'" target="_blank">Open</b-button>
+                            <b-button variant="info" v-bind:href="'/'+ project.uuid +'/changelogs'" target="_blank">Open</b-button>
                         </b-input-group-append>
                     </b-input-group>
                 </b-form-group>
@@ -117,6 +117,22 @@
             </b-button>
         </b-form>
 
+        <div v-if="project.id" class="mb-5">
+            <b-list-group>
+                <b-list-group-item class="d-flex justify-content-between" variant="danger">
+                    <div>
+                        <h6 class="mt-1">Delete this project</h6>
+                    </div>
+
+                    <b-button type="submit" variant="danger" size="sm" :disabled="deletionInProgress" v-on:click="deleteProject">
+                        <font-awesome-icon :icon="['fas', 'trash']" v-if="!deletionInProgress" />
+                        <b-spinner small v-if="deletionInProgress" ></b-spinner>
+                    </b-button>
+                </b-list-group-item>
+
+            </b-list-group>
+        </div>
+
         <div v-if="project.id">
             <widget-settings-component :project="project"></widget-settings-component>
         </div>
@@ -130,6 +146,7 @@ import AvatarCropper from "vue-avatar-cropper"
 import { validationMixin } from 'vuelidate'
 import { required, url } from 'vuelidate/lib/validators'
 import {error_handling_mixin} from "../../mixins";
+import changelogApi from '../../api'
 
 export default {
     name: "project-settings",
@@ -148,6 +165,7 @@ export default {
     data : function(){
         return {
             submissionInProgress : !1,
+            deletionInProgress : !1,
             projectLogo : undefined,
             uploadingLogo : !1,
             serverUrl : location.origin
@@ -184,10 +202,9 @@ export default {
         },
         createProject : function(){
             this.submissionInProgress = true;
-
-            axios.post('/company/'+ this.company_id +'/project', this.project).then(response => {
+            changelogApi.project.store(this.company_id, this.project).then(response => {
                 if (response.data.status === 'success') {
-                    window.location.href = '/projects/' + response.data.project.slug + '/changelogs'
+                    window.location.href = response.data.redirectTo;
                 } else {
                     this.handleErrors(response)
 
@@ -200,7 +217,7 @@ export default {
         },
         updateProject : function() {
             this.submissionInProgress = true;
-            axios.put('/project/' + this.project.uuid, this.project).then(response => {
+            changelogApi.project.update(this.project.uuid, this.project).then(response => {
                 if (response.data.status === 'success') {
                     this.$toastr.s("Success", response.data.message);
                 } else {
@@ -210,6 +227,33 @@ export default {
                 this.handleSubmissionFailure(error);
             }).then(() => {
                 this.submissionInProgress = false;
+            });
+        },
+
+        deleteProject : function(){
+            this.$confirm({
+                message : 'Are you sure you want to delete this project?',
+                button: {
+                    no: 'No',
+                    yes: 'Yes'
+                },
+                callback: confirm => {
+                    if (confirm) {
+                        this.deletionInProgress = !0
+                        changelogApi.project.delete(this.project.uuid).then(response => {
+                            if (response.data.status === 'success') {
+                                this.$toastr.s("Success", response.data.message);
+                                location.href = response.data.redirectTo;
+                            } else {
+                                this.handleErrors(response);
+                            }
+                        }).catch(error => {
+                            this.handleSubmissionFailure(error);
+                        }).then(() => {
+                            this.deletionInProgress = !1;
+                        });
+                    }
+                }
             });
         },
 
@@ -227,10 +271,10 @@ export default {
         handlerError(message, type, xhr) {
             //this.message = "Oops! Something went wrong...";
         },
-        onCopy: function (e) {
+        onUuidCopy: function (e) {
             this.$toastr.s("Success", 'Project uuid has been copied to the clipboard.');
         },
-        onError: function (e) {
+        onUuidCopyError: function (e) {
             this.$toastr.e("Error", 'Failed to copy project uuid to the clipboard.');
         }
     }

@@ -15,9 +15,9 @@ class ChangelogController extends Controller
 {
     use StoresChangelog;
 
-    public function index($slug)
+    public function index($uuid)
     {
-        $project = Project::where('slug', $slug)->first();
+        $project = Project::where('uuid', $uuid)->first();
 
         if (!$project) {
             abort(404);

@@ -6,6 +6,8 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
+use Ramsey\Uuid\Uuid;
 
 class User extends Authenticatable
 {
@@ -44,6 +46,22 @@ class User extends Authenticatable
 
     public $guard_name = 'api';
 
+    public static function boot()
+    {
+        parent::boot();
+
+        self::creating(function($model){
+            $uuid = Uuid::uuid4();
+
+            //make sure uuid does not already exists
+            while (self::where('uuid', $uuid)->count() > 0) {
+                $uuid = Uuid::uuid4();
+            }
+
+            $model->uuid = $uuid->toString();
+        });
+    }
+
     public function company(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Company::class, 'company_id', 'id');
@@ -57,5 +75,9 @@ class User extends Authenticatable
     public function getFullNameAttribute()
     {
         return ucfirst($this->first_name) . ' ' . ucfirst($this->last_name);
+    }
+    public function teammates()
+    {
+        return $this->where('company_id', '=', Auth::user()->company_id)->get();
     }
 }

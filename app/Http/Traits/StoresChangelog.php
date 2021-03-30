@@ -33,9 +33,8 @@ trait StoresChangelog
         $changelog->body = $data['body'];
         $changelog->category_id = $data['category_id'];
         $changelog->updated_by = Auth::id();
-        if (isset($data['published_at'])) {
-            $changelog->published_at = Carbon::parse($data['published_at']);
-        }
+
+        $changelog->published_at = isset($data['published_at']) ? Carbon::parse($data['published_at']) : null;
 
         $changelog->save();
 
