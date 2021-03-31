@@ -146,7 +146,7 @@
         <script>
             let changelog_config = {
                 //container : '.cl-container', //optional - insert to the DOM - body
-                uuid : '64fe1b1d-9861-4d70-afd6-b1c006235384',
+                uuid : '768a4992-c556-415b-a388-fb0dddedfe60',
                 translations : {
                     // placeholderLabel : 'Release Notes', //link element
                     headerLabel : 'Latest News'
@@ -157,7 +157,7 @@
                 triggerElement : '.fa-bell'
             }
         </script>
-        <script src="https://dev.logz.app/api/widget.js" id="cl-script"></script>
+        <script src="http://localhost/api/widget.js" id="cl-script"></script>
         <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-vue@1.0.4/image-resize-vue.min.js"></script>
         <script src="{{ mix('js/app.js') }}"></script>
     </body>

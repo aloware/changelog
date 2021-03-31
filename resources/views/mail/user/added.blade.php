@@ -2,14 +2,14 @@
 
     Hello {{ $user->first_name }},
 
-    Welcome to ChangelogMgr.
+    Welcome to {{ env('APP_NAME') }}.
 
-    Your account admin has invited you to join your company in ChangelogMgr.
+    Your account admin has invited you to join your company in {{ env('APP_NAME') }}.
 
     To proceed, click the button below,
 
 @component('mail::button', ['url' => $url, 'color' => 'primary'])
-    Open my ChangelogMgr account
+    Open my {{ env('APP_NAME') }} account
 @endcomponent
 
     Thanks,

@@ -18,7 +18,7 @@
                                 <b-dropdown-item v-bind:href="'/project/' + getParsedProjectData.uuid + '/settings'">
                                     <font-awesome-icon :icon="['fas', 'cog']"/>
                                     Project Settings</b-dropdown-item>
-                                <b-dropdown-item v-bind:href="'/' + getParsedProjectData.uuid + '/changelogs'" target="_blank">
+                                <b-dropdown-item v-bind:href="'/' + getParsedProjectData.slug + '/changelogs'" target="_blank">
                                     <font-awesome-icon :icon="['fas', 'eye']"/>
                                     View Public Page</b-dropdown-item>
                             </b-dropdown>

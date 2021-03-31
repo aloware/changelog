@@ -88,12 +88,12 @@
                 <b-form-group label="URL">
                     <b-input-group>
                         <b-form-input
-                            v-bind:value=" serverUrl + '/'+ project.uuid +'/changelogs'"
+                            v-bind:value=" serverUrl + '/'+ project.slug +'/changelogs'"
                             placeholder="Public page changelog URL"
                             disabled
                         ></b-form-input>
                         <b-input-group-append>
-                            <b-button variant="info" v-bind:href="'/'+ project.uuid +'/changelogs'" target="_blank">Open</b-button>
+                            <b-button variant="info" v-bind:href="'/'+ project.slug +'/changelogs'" target="_blank">Open</b-button>
                         </b-input-group-append>
                     </b-input-group>
                 </b-form-group>

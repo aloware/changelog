@@ -8,7 +8,7 @@
             </div>
         </div>
         <div class="changelog-widget-footer">
-            <h6 class="text-center" style="font-size: 0.75rem;"><a v-bind:href="'/'+ project.uuid + '/changelogs'" class="text-muted" target="_blank">Read more...</a></h6>
+            <h6 class="text-center" style="font-size: 0.75rem;"><a v-bind:href="'/'+ project.slug + '/changelogs'" class="text-muted" target="_blank">Read more...</a></h6>
         </div>
     </div>
 </template>

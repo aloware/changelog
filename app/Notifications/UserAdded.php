@@ -42,8 +42,8 @@ class UserAdded extends Notification
     public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('ChangelogMgr Invitation')
-            ->markdown('mail.user.added', ['user' => $notifiable, 'url' => url('/user/'. $notifiable->uuid .'/set-password'), 'actionText' => 'Open My ChangelogMgr Account']);
+            ->subject(env('APP_NAME') .' Invitation')
+            ->markdown('mail.user.added', ['user' => $notifiable, 'url' => url('/user/'. $notifiable->uuid .'/set-password'), 'actionText' => 'Open My '. env('APP_NAME') .' Account']);
     }
 
     /**

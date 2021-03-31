@@ -70,7 +70,7 @@ Route::middleware('auth')->group(function(){
 });
 
 
-Route::get('{projectUuid}/changelogs', [\App\Http\Controllers\ProjectController::class, 'getPageView'])->name('page-changelogs-view');
+Route::get('{projectSlug}/changelogs', [\App\Http\Controllers\ProjectController::class, 'getPageView'])->name('page-changelogs-view');
 
 Route::get('{projectUuid}/widgets', [\App\Http\Controllers\ProjectController::class, 'getWidgetView'])->name('widget-changelogs-view');
 

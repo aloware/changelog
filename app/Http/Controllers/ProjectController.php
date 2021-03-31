@@ -79,9 +79,9 @@ class ProjectController extends Controller
         return response()->json($changelogs);
     }
 
-    public function getPageView($uuid)
+    public function getPageView($slug)
     {
-        $project = Project::where('uuid', $uuid)->first();
+        $project = Project::where('slug', $slug)->first();
 
         if (!$project) {
             abort(404);
@@ -146,12 +146,17 @@ class ProjectController extends Controller
 
     public function destroy($uuid): \Illuminate\Http\JsonResponse
     {
+        $user = Auth::user();
+
         $project = Project::where('uuid', $uuid)->first();
         if ($project) {
             try {
-                $project->delete();
-                $response = ['status' => 'success', 'message' => 'Project has been successfully deleted.', 'redirectTo' => url('/home')];
-
+                if ($user->company->projects->count() === 1) {
+                    $response = ['status' => 'error', 'message' => 'Unable to delete project. You need to have at least one project.'];
+                } else {
+                    $project->delete();
+                    $response = ['status' => 'success', 'message' => 'Project has been successfully deleted.', 'redirectTo' => url('/home')];
+                }
             } catch (\Exception $e) {
                 $response = ['status' => 'error', 'message' => 'Unable to delete project.'];
             }
