@@ -1,6 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
-
-.cl-widget-container > * {
+@import url(https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap);
+.cl-widget-container > *,
+.cl-widget-container h1,
+.cl-widget-container h2,
+.cl-widget-container h3,
+.cl-widget-container h4,
+.cl-widget-container h5,
+.cl-widget-container h6
+{
     font-family: 'Lato', sans-serif !important;
 }
 
@@ -312,6 +318,10 @@ span.widget-badge {
 .cl-widget-container .changelog-title {
     color: #212529;
 }
+
+
+
+
 
 
 
