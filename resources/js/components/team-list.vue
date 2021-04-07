@@ -12,8 +12,13 @@
         <b-list-group>
             <b-list-group-item v-for="(user, index) in users" :key="user.id">
                 <team-component :user="user"></team-component>
-                <b-button-group v-if="users.length > 1">
-                    <b-button variant="danger" size="sm" v-on:click="removeUser(user, index)" :disabled="deletionInProgress && deleteButtonIndexClicked === index">
+                <b-button-group >
+                    <b-button variant="success" size="sm" v-on:click="resendInvitationLink(user, index)" :disabled="invitationLinkSendingInProgress && invitationLinkButtonIndexClicked === index" v-if="!user.email_verified_at">
+                        <b-spinner small v-if="invitationLinkSendingInProgress && invitationLinkButtonIndexClicked === index"></b-spinner>
+                        <font-awesome-icon :icon="['fas', 'user-check']" v-if="invitationLinkButtonIndexClicked !== index"/>
+                        Resend Invitation Link
+                    </b-button>
+                    <b-button variant="danger" size="sm" v-on:click="removeUser(user, index)" :disabled="deletionInProgress && deleteButtonIndexClicked === index" v-if="users.length > 1">
                         <b-spinner small v-if="deletionInProgress && deleteButtonIndexClicked === index"></b-spinner>
                         <font-awesome-icon :icon="['fas', 'trash']" v-if="deleteButtonIndexClicked !== index"/>
                         Delete
@@ -27,9 +32,12 @@
 
 <script>
 import {mapActions, mapGetters} from "vuex";
+import changelogApi from '../api'
+import {error_handling_mixin} from "../mixins";
 
 export default {
     name: "team-list",
+    mixins: [error_handling_mixin],
     props : {
         user_data : Array
     },
@@ -39,7 +47,9 @@ export default {
     data(){
         return {
             deletionInProgress : !1,
-            deleteButtonIndexClicked : null
+            deleteButtonIndexClicked : null,
+            invitationLinkSendingInProgress : !1,
+            invitationLinkButtonIndexClicked : null
         }
     },
     methods : {
@@ -68,6 +78,22 @@ export default {
                 }
             });
         },
+        resendInvitationLink : function(user, index){
+            this.invitationLinkButtonIndexClicked = index;
+            this.invitationLinkSendingInProgress = !0;
+            changelogApi.user.sendInvitationLink(user.id).then(response => {
+                if (response.status === 200 && response.data.status === 'success') {
+                    this.$toastr.s("Success", response.data.message);
+                } else {
+                    this.$toastr.e("Error", response.data.message);
+                }
+
+            }).catch(error => {
+                this.handleSubmissionFailure(error);
+            }).then(res => {
+                this.invitationLinkSendingInProgress = !1;
+            });
+        }
     },
     mounted : function(){
         this.$store.commit('setUsers', this.user_data);

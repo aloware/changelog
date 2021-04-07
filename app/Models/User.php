@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\UserEmailChanged;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -9,7 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Ramsey\Uuid\Uuid;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
@@ -50,7 +51,7 @@ class User extends Authenticatable
     {
         parent::boot();
 
-        self::creating(function($model){
+        self::creating(function($model) {
             $uuid = Uuid::uuid4();
 
             //make sure uuid does not already exists
@@ -59,6 +60,13 @@ class User extends Authenticatable
             }
 
             $model->uuid = $uuid->toString();
+        });
+
+        self::updating(function(self $model) {
+            if ($model->email !== $model->getOriginal('email')) {
+                $model->email_verified_at = null;
+                event(new UserEmailChanged($model));
+            }
         });
     }
 

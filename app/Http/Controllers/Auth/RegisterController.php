@@ -13,7 +13,9 @@ use App\Models\Changelog;
 use App\Models\Company;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -115,7 +117,6 @@ class RegisterController extends Controller
         ];
 
         DB::table('categories')->insert($categories);
-
         return $user;
     }
 }

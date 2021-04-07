@@ -113,7 +113,7 @@
             <b-button type="submit" variant="primary" :disabled="submissionInProgress">
                 <font-awesome-icon :icon="['fas', 'check']" v-if="!submissionInProgress" />
                 <b-spinner small v-if="submissionInProgress" ></b-spinner>
-                {{ submissionInProgress ? 'Please wait..' : 'Submit' }}
+                {{ submissionInProgress ? 'Saving changes..' : 'Save Changes' }}
             </b-button>
         </b-form>
 

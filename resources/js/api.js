@@ -43,6 +43,12 @@ export default {
         },
         delete : function(id){
             return axios.delete('/user/' + id)
+        },
+        update : function(user){
+            return axios.put('/user/' + user.id, user)
+        },
+        sendInvitationLink : function(id){
+            return axios.post('/user/'+ id +'/invitation/send');
         }
     },
 

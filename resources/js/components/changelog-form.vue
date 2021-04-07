@@ -40,16 +40,14 @@
                 </b-form-group>
 
                 <b-form-group id="input-group-3" label="Category:" label-for="changelog_category">
-                    <b-form-select
-                        id="changelog_category"
+                    <v-select
+                        :options="categories"
                         v-model="$v.changelog.category.$model"
                         :state = "validateState('category')"
+                        :clearable="false"
                     >
-                        <option v-for="category in categories" v-bind:value="category">
-                            {{ category.label }}
-                        </option>
+                    </v-select>
 
-                    </b-form-select>
                     <b-form-invalid-feedback id="name-live-feedback" v-if="!$v.changelog.category.required">
                         Select a category for this changelog.
                     </b-form-invalid-feedback>
@@ -69,6 +67,7 @@
                         format="YYYY-MM-DD"
                         label="Select date"
                         formatted="YYYY-MM-DD"
+                        :minDate="today"
                     />
                 </b-form-group>
 
@@ -101,6 +100,7 @@
     import ImageResize from 'quill-image-resize-module'
     import { error_handling_mixin } from '../mixins'
     import changelogApi from '../api'
+    import moment from "moment";
     export default {
         name: "ChangelogFormComponent",
         mixins: [validationMixin, error_handling_mixin],
@@ -134,7 +134,8 @@
                 },
                 submissionInProgress : !1,
                 overlayMessage : '',
-                showOverlay : false
+                showOverlay : false,
+                today : moment().format('YYYY-MM-DD')
             }
         },
         validations : {

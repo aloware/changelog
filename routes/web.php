@@ -24,7 +24,7 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::middleware('auth')->group(function(){
+Route::middleware(['auth', 'verified'])->group(function(){
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
     Route::get('projects/{uuid}/changelogs', [\App\Http\Controllers\ChangelogController::class, 'index'])->name('project-changelogs-view');
@@ -63,6 +63,14 @@ Route::middleware('auth')->group(function(){
 
     Route::delete('/user/{id}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('delete-user');
 
+    Route::post('/user/{id}/invitation/send', [\App\Http\Controllers\UserController::class, 'sendInvitationLink'])->name('send-user-invitation');
+
+    Route::get('/user/{uuid}/profile', [\App\Http\Controllers\UserController::class, 'profile'])->name('user-profile');
+
+    Route::put('/user/{id}', [\App\Http\Controllers\UserController::class, 'update'])->name('user-profile-update');
+
+    Route::put('/user/{uuid}/avatar/upload', [\App\Http\Controllers\UserController::class, 'uploadAvatar'])->name('user-avatar-upload');
+
     Route::get('/test', function (){
         return view('welcome');
     })->name('widget-test');
@@ -72,6 +80,8 @@ Route::middleware('auth')->group(function(){
 
 Route::get('{projectSlug}/changelogs', [\App\Http\Controllers\ProjectController::class, 'getPageView'])->name('page-changelogs-view');
 
+Route::get('{projectUuid}/changelogs/redirect', [\App\Http\Controllers\ProjectController::class, 'pageViewRedirect'])->name('page-changelogs-redirect');
+
 Route::get('{projectUuid}/widgets', [\App\Http\Controllers\ProjectController::class, 'getWidgetView'])->name('widget-changelogs-view');
 
 Route::get('/widget', [\App\Http\Controllers\ProjectController::class, 'widget'])->name('widget-config-view');
@@ -79,3 +89,9 @@ Route::get('/widget', [\App\Http\Controllers\ProjectController::class, 'widget']
 Route::get('/user/{id}/set-password', [\App\Http\Controllers\UserController::class, 'setPassword'])->name('set-user-password-view');
 
 Route::post('/user/{id}/set-password', [\App\Http\Controllers\UserController::class, 'updatePassword'])->name('set-user-password');
+
+Route::get('/email/verify', [\App\Http\Controllers\Auth\VerificationController::class, 'notice'])->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', [\App\Http\Controllers\Auth\VerificationController::class, 'verifyEmail'])->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', [\App\Http\Controllers\Auth\VerificationController::class, 'resendVerification'])->middleware(['auth', 'throttle:6,1'])->name('verification.resend');
