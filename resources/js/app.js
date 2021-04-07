@@ -24,6 +24,8 @@ import moment from 'vue-moment'
 import store from './store'
 import VueConfirmDialog from 'vue-confirm-dialog'
 import VueClipboard from 'vue-clipboard2'
+import vSelect from "vue-select"
+import 'vue-select/dist/vue-select.css';
 
 import './filters'
 window.Vue = Vue;
@@ -40,6 +42,8 @@ Vue.use(IconsPlugin);
 Vue.use(VueToastr);
 Vue.use(moment);
 Vue.use(VueClipboard)
+
+Vue.component('v-select', vSelect)
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -73,6 +77,9 @@ Vue.component('VueCtkDateTimePicker', VueCtkDateTimePicker);
 Vue.component('team-list-component', require('./components/team-list.vue').default);
 Vue.component('team-component', require('./components/team.vue').default);
 Vue.component('team-form-component', require('./components/team-form.vue').default);
+
+Vue.component('user-profile-component', require('./components/user-profile.vue').default);
+Vue.component('user-name-link-component', require('./components/user-name-link.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

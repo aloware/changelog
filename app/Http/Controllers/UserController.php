@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 
+use App\Models\FileUpload;
+use App\Models\Project;
 use App\Models\User;
 use App\Notifications\UserAdded;
 use Carbon\Carbon;
@@ -10,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+use Ramsey\Uuid\Uuid;
 
 class UserController extends Controller
 {
@@ -34,14 +37,34 @@ class UserController extends Controller
 
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): \Illuminate\Http\JsonResponse
     {
         $user = User::find($id);
-        $user->first_name = $request->get('first_name');
-        $user->last_name = $request->get('last_name');
-        $user->email = $request->get('email');
-        $user->password = $request->get('password');
-        $user->save();
+
+        if (!$user) {
+            return response()->json(['status' => 'error', 'message' => 'Unable to find user.']);
+        }
+
+        if (\auth()->user()->can('update', $user)) {
+            try {
+                $user->first_name = $request->get('first_name');
+                $user->last_name = $request->get('last_name');
+                $user->email = $request->get('email');
+
+                if ($request->has('password') && $request->get('password') === $request->get('password_confirmation')) {
+                    $user->password = Hash::make($request->get('password'));
+                }
+
+                $user->save();
+                return response()->json(['status' => 'success', 'message' => 'User profile has been successfully updated.']);
+            } catch (\Exception $e) {
+                dd($e->getMessage());
+                return response()->json(['status' => 'error', 'message' => 'Error while updating user profile.']);
+            }
+
+        } else {
+            return $this->handleUnauthorizedJsonResponse();
+        }
     }
 
     public function destroy($id): \Illuminate\Http\JsonResponse
@@ -89,5 +112,42 @@ class UserController extends Controller
         $guard->login($user);
 
         return redirect()->route('home');
+    }
+
+    public function sendInvitationLink($id): \Illuminate\Http\JsonResponse
+    {
+        $user = User::find($id);
+
+        try {
+            $user->notify(new UserAdded($user));
+            $response = ['status' => 'success', 'message' => 'Invitation link has been successfully sent.'];
+        } catch (\Exception $e) {
+            $response = ['status' => 'error', 'message' => 'An error was encountered while sending the invitation link.'];
+        }
+
+        return response()->json($response);
+    }
+
+    public function profile()
+    {
+        return view('user.profile')->with('user', Auth::user());
+    }
+
+    public function uploadAvatar($uuid, Request $request): \Illuminate\Http\JsonResponse
+    {
+        $user = User::where('uuid', $uuid)->first();
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $filename = Uuid::uuid1().'.'.$file->extension();
+
+            $user->avatar = $filename;
+            $user->save();
+
+            $request->file('file')->storeAs($user->uuid . '/avatar', $filename, 'public');
+            return response()->json(['url' => url('/api/user/'. $user->uuid .'/avatar?filename='.$filename)]);
+        }
+
+        return response()->json(['status' => 'error', 'message' => 'No file found.']);
     }
 }

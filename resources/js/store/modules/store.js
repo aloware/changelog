@@ -26,7 +26,8 @@ const state = {
         first_name : '',
         last_name : '',
         email : ''
-    }
+    },
+    auth : {}
 }
 const getters = {
     categories : (state) => state.categories,
@@ -42,6 +43,7 @@ const getters = {
     showCategoryEditor : (state) => state.showCategoryEditor,
     users : (state) => state.users,
     user : (state) => state.user,
+    auth: (state) => state.auth
 
 }
 const actions = {
@@ -176,6 +178,10 @@ const actions = {
         }
 
         return response;
+    },
+
+    setAuthUser({ commit, state }, user){
+        commit('setAuthUser', user)
     }
 }
 
@@ -339,6 +345,9 @@ const mutations = {
                 break;
             }
         }
+    },
+    setAuthUser : function(state, user){
+        state.auth = user;
     }
 }
 

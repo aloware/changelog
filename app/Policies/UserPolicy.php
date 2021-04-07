@@ -28,4 +28,9 @@ class UserPolicy
     {
         return $user->company_id === $deletedUser->company_id;
     }
+
+    public function update(User $user, User $updatedUser): bool
+    {
+        return $user->company_id === $updatedUser->company_id;
+    }
 }

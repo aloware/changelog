@@ -66,14 +66,24 @@ class ProjectController extends Controller
     {
         $project = Project::where('uuid', $projectUuid)->first();
 
-        if (!$request->has('page')) {
-            $changelogs = Cache::rememberForever(Changelog::CACHE_KEY_PREFIX . $project->uuid, function() use ($project){
-                return $project->published()
+        switch ($request->get('displayType')) {
+            case 'widget' :
+                $changelogs = Cache::rememberForever(Changelog::CACHE_WIDGET_KEY_PREFIX . $project->uuid, function() use ($project){
+                    return $project->published()
+                        ->limit($project->widget_entry_limit)->get();
+                });
+                break;
+            case 'page':
+            default:
+            if (!$request->has('page')) {
+                $changelogs = Cache::rememberForever(Changelog::CACHE_KEY_PREFIX . $project->uuid, function() use ($project){
+                    return $project->published()
+                        ->paginate($project->page_entry_limit);
+                });
+            } else {
+                $changelogs = $project->published()
                     ->paginate($project->page_entry_limit);
-            });
-        } else {
-            $changelogs = $project->published()
-                ->paginate($project->page_entry_limit);
+            }
         }
 
         return response()->json($changelogs);
@@ -90,7 +100,14 @@ class ProjectController extends Controller
         return view('output.page')->with('project', $project);
     }
 
-    public function getWidgetView($projectUuid)
+    public function pageViewRedirect(Request $request, $projectUuid): \Illuminate\Http\RedirectResponse
+    {
+        $project = Project::where('uuid', $projectUuid)->first();
+
+        return redirect()->route('page-changelogs-view', ['projectSlug' => $project->slug]);
+    }
+
+    public function getWidgetView(Request $request, $projectUuid)
     {
         $project = Project::where('uuid', $projectUuid)->first();
 
@@ -103,7 +120,7 @@ class ProjectController extends Controller
                 ->limit($project->widget_entry_limit)->get();
         });
 
-        return view('output.widget')->with('project', $project)->with('changelogs', $changelogs);
+        return view('output.widget')->with('project', $project)->with('changelogs', $changelogs)->with('params', ['headerLabel' => $request->get('headerLabel')]);
     }
 
     public function create($companyId)
@@ -197,7 +214,7 @@ class ProjectController extends Controller
 
 
             $request->file('image')->storeAs($project->uuid, $filename, 'public');
-            return response()->json(['url' => '/api/project/changelog/image/' . $filename]);
+            return response()->json(['url' => url('/api/project/changelog/image/' . $filename)]);
         }
 
         return response()->json(['status' => 'error', 'message' => 'No file found.']);
@@ -241,7 +258,7 @@ class ProjectController extends Controller
             $project->save();
 
             $request->file('file')->storeAs($project->uuid . '/logo', $filename, 'public');
-            return response()->json(['url' => '/api/project/'. $project->uuid .'/logo?filename='.$filename]);
+            return response()->json(['url' => url('/api/project/'. $project->uuid .'/logo?filename='.$filename)]);
         }
 
         return response()->json(['status' => 'error', 'message' => 'No file found.']);

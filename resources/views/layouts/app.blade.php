@@ -69,7 +69,8 @@
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{{ route('categories', ['companyId' => Auth::user()->company->id]) }}">Categories</a>
                                     <a class="dropdown-item" href="{{ route('users', ['companyId' => Auth::user()->company->id]) }}">Team Management</a>
-{{--                                    <a class="dropdown-item" href="{{ route('project-changelogs-view', ['app_name' => $item->name]) }}">Settings</a>--}}
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="{{ route('user-profile', ['uuid' => Auth::user()->uuid]) }}">Profile Settings</a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item text-muted" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();

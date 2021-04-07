@@ -47,6 +47,7 @@
         "vue-ctk-date-time-picker": "^2.5.0",
         "vue-moment": "^4.1.0",
         "vue-quill-editor": "^3.0.6",
+        "vue-select": "^3.11.2",
         "vue-swatches": "^2.1.0",
         "vue-toastr": "^2.1.2",
         "vue2-editor": "^2.10.2",

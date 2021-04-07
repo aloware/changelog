@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <h6 class="text-center header-label">Latest Changes</h6>
-        <div class="changelogs-container scrollable">
+    <div class="cl-widget-wrapper">
+        <h6 class="text-center header-label">{{ this.params.headerLabel }}</h6>
+        <div class="changelogs-container changelog-scrollable">
             <div v-for="(changelog, index) in changelogs" :key="changelog.id">
                 <published-changelog-widget-list-component :changelog="changelog" ></published-changelog-widget-list-component>
                 <h2 class="hr-line-text" v-if="index !== changelogs.length -1"><span></span></h2>
@@ -18,7 +18,7 @@
 
     export default {
         name: "published-changelog-widget",
-        props : ['project', 'changelogs'],
+        props : ['project', 'changelogs', 'params'],
         computed : {
         },
         methods : {

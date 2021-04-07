@@ -4,126 +4,131 @@ body {
     font-family: 'Lato', sans-serif !important;
 }
 
-.scrollable {
+.changelog-scrollable {
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 }
 
-.scrollable.hover,
-.scrollable.hover > .row-inner {
+.changelog-scrollable.hover,
+.changelog-scrollable.hover > .row-inner {
     overflow-y: hidden;
 }
 
-.scrollable.hover > * {
+.changelog-scrollable.hover > * {
     margin-top: -1px;
 }
 
-.scrollable.hover:hover,
-.scrollable.hover:focus,
-.scrollable.hover:active {
+.changelog-scrollable.hover:hover,
+.changelog-scrollable.hover:focus,
+.changelog-scrollable.hover:active {
     overflow: visible;
     overflow-y: auto;
 }
 
-.scrollable.hover:hover > .row-inner,
-.scrollable.hover:focus > .row-inner,
-.scrollable.hover:active > .row-inner {
+.changelog-scrollable.hover:hover > .row-inner,
+.changelog-scrollable.hover:focus > .row-inner,
+.changelog-scrollable.hover:active > .row-inner {
     overflow-y: auto;
 }
 
-.smart .scrollable,
-.smart .scrollable > .row-inner {
+.smart .changelog-scrollable,
+.smart .changelog-scrollable > .row-inner {
     overflow-y: auto !important;
 }
 
-.scrollable::-webkit-scrollbar{
+.changelog-scrollable::-webkit-scrollbar{
     width: 5px;
     background: transparent;
 }
 
-.scrollable::-webkit-scrollbar-thumb{
+.changelog-scrollable::-webkit-scrollbar-thumb{
     background: #ffa000;
 }
 
-.scrollable.flipped {
+.changelog-scrollable.flipped {
     direction: rtl;
 }
 
-.scrollable.flipped .list-group {
+.changelog-scrollable.flipped .list-group {
     direction: ltr;
 }
 
-.callout {
+.changelog-callout {
     padding: 20px;
     border-radius: 10px;
 }
 
-.callout h4 {
+.changelog-callout h4 {
     margin-top: 0;
     margin-bottom: 5px;
 }
-.callout p:last-child {
+.changelog-callout p:last-child {
     margin-bottom: 0;
 }
-.callout code {
+.changelog-callout code {
     border-radius: 3px;
 }
-.callout + .bs-callout {
+.changelog-callout + .bs-callout {
     margin-top: -5px;
 }
 
-.callout-default {
+.changelog-callout-default {
     border-left-color: #777;
 }
-.callout-default h4 {
+.changelog-callout-default h4 {
     color: #777;
 }
 
-.callout-primary {
+.changelog-callout-primary {
     border-left-color: #428bca;
 }
-.callout-primary h4 {
+.changelog-callout-primary h4 {
     color: #428bca;
 }
 
-.callout-success {
+.changelog-callout-success {
     border-left-color: #5cb85c;
 }
-.callout-success h4 {
+.changelog-callout-success h4 {
     color: #5cb85c;
 }
 
-.callout-danger {
+.changelog-callout-danger {
     border-left-color: #d9534f;
 }
-.callout-danger h4 {
+.changelog-callout-danger h4 {
     color: #d9534f;
 }
 
-.callout-warning {
+.changelog-callout-warning {
     border-left-color: #f0ad4e;
 }
-.callout-warning h4 {
+.changelog-callout-warning h4 {
     color: #f0ad4e;
 }
 
-.callout-info {
+.changelog-callout-info {
     border-left-color: #5bc0de;
 }
-.callout-info h4 {
+.changelog-callout-info h4 {
     color: #5bc0de;
 }
 
-.callout-bdc {
+.changelog-callout-bdc {
     border-left-color: #29527a;
 }
-.callout-bdc h4 {
+.changelog-callout-bdc h4 {
     color: #29527a;
 }
 
 .text-center {
     text-align: center;
+}
+
+.changelogs-container.scrollable {
+    max-height: 82vh;
+    height: auto !important;
 }
 
 .changelogs-container {
@@ -187,7 +192,7 @@ span.widget-badge {
     transition: all 0.3s;
 }
 
-.callout:hover {
+.changelog-callout:hover {
     background: hsl(240deg 20% 98%);
 }
 
@@ -250,5 +255,4 @@ h2.hr-line-text span {
     font-size: 0.75rem;
     color: #a6adba;
 }
-
 
