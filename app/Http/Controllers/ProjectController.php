@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ProjectController extends Controller
 {
@@ -182,7 +183,25 @@ class ProjectController extends Controller
         return response()->json($response ?? ['status' => 'error', 'message' => 'Project not found']);
     }
 
-    public function getImage($filename): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    /**
+     *  * @OA\Get(
+     *     path="/api/project/changelog/image/{filename}",
+     *     summary="get image embedded in a changelog",
+     *     @OA\Parameter(
+     *     name="filename",
+     *     in="path",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     * ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="success"
+     *     )
+     * )
+     * @param $filename
+     * @return BinaryFileResponse
+     */
+    public function getImage($filename): BinaryFileResponse
     {
         $fileUpload = FileUpload::where('name', $filename)->first();
         $project = Project::find($fileUpload->project_id);
@@ -264,7 +283,25 @@ class ProjectController extends Controller
         return response()->json(['status' => 'error', 'message' => 'No file found.']);
     }
 
-    public function getLogo($uuid): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    /**
+     *  * @OA\Get(
+     *     path="/api/project/{uuid}/logo",
+     *     summary="get project logo",
+     *     @OA\Parameter(
+     *     name="uuid",
+     *     in="path",
+     *     required=true,
+     *     @OA\Schema(type="string")
+     * ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="success"
+     *     )
+     * )
+     * @param $uuid
+     * @return BinaryFileResponse
+     */
+    public function getLogo($uuid): BinaryFileResponse
     {
         $project = Project::where('uuid', $uuid)->first();
         $fileUpload = FileUpload::where('name', $project->logo)->first();
@@ -273,8 +310,10 @@ class ProjectController extends Controller
             $path = Storage::disk('public')->path($project->uuid.'/logo/' . $project->logo);
             return response()->file($path);
         } else {
-            //TODO make an avatar logo?
+            $path = Storage::disk('public')->path('tryvium.png');
         }
+
+        return response()->file($path);
     }
 
     public function widget()

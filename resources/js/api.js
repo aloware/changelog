@@ -38,6 +38,9 @@ export default {
     },
 
     user : {
+        index : function(){
+            return axios.get('/users');
+        },
         store : function (user) {
             return axios.post('/user', user);
         },

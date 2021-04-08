@@ -26,7 +26,7 @@ class UserPolicy
 
     public function delete(User $user, User $deletedUser): bool
     {
-        return $user->company_id === $deletedUser->company_id;
+        return $user->company_id === $deletedUser->company_id && $user->id !== $deletedUser->id;
     }
 
     public function update(User $user, User $updatedUser): bool

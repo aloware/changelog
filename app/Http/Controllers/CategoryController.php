@@ -12,10 +12,10 @@ class CategoryController extends Controller
 {
     /**
      *  * @OA\Get(
-     *     path="/api/{company}/categories",
+     *     path="/api/company/{company_id}/categories",
      *     summary="list of company categories",
      *     @OA\Parameter(
-     *     name="companyId",
+     *     name="company_id",
      *     in="path",
      *     required=true,
      *     @OA\Schema(type="string")

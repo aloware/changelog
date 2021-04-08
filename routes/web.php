@@ -59,6 +59,8 @@ Route::middleware(['auth', 'verified'])->group(function(){
 
     Route::get('company/{companyId}/users', [\App\Http\Controllers\UserController::class, 'index'])->name('users');
 
+    Route::get('/users', [\App\Http\Controllers\UserController::class, 'getLists'])->name('user-lists');
+
     Route::post('/user', [\App\Http\Controllers\UserController::class, 'store'])->name('store-user');
 
     Route::delete('/user/{id}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('delete-user');

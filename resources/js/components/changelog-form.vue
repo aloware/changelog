@@ -58,7 +58,7 @@
                         <label class="custom-control-label" for="is_published">Published at</label>
                     </div>
                 </b-form-group>
-                <b-form-group description="Select date and time, you can select future date to automatically published your changelog." v-if="is_published">
+                <b-form-group description="You can select future date to automatically published your changelog." v-if="is_published">
                     <VueCtkDateTimePicker
                         v-model="changelog.published_at"
                         v-bind:right=true

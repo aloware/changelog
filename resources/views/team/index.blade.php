@@ -3,6 +3,6 @@
 
 @section('content')
     <div class="container mt-5">
-        <team-list-component :user_data="{{ $user->teammates() }}"></team-list-component>
+        <team-list-component :users_data="{{ $user->teammates() }}" :auth_user="{{ $user }}"></team-list-component>
     </div>
 @endsection

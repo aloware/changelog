@@ -5,13 +5,13 @@
         "version": "0.1"
     },
     "paths": {
-        "/api/{company}/categories": {
+        "/api/company/{company_id}/categories": {
             "get": {
                 "summary": "list of company categories",
                 "operationId": "App\\Http\\Controllers\\CategoryController::getByCompanyId",
                 "parameters": [
                     {
-                        "name": "companyId",
+                        "name": "company_id",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -317,12 +317,65 @@
                     }
                 }
             }
+        },
+        "/api/project/changelog/image/{filename}": {
+            "get": {
+                "summary": "get image embedded in a changelog",
+                "operationId": "App\\Http\\Controllers\\ProjectController::getImage",
+                "parameters": [
+                    {
+                        "name": "filename",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/api/project/{uuid}/logo": {
+            "get": {
+                "summary": "get project logo",
+                "operationId": "App\\Http\\Controllers\\ProjectController::getLogo",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/api/users": {
+            "get": {
+                "summary": "get users list",
+                "operationId": "App\\Http\\Controllers\\UserController::getLists",
+                "responses": {
+                    "200": {
+                        "description": "success"
+                    }
+                }
+            }
         }
     },
     "components": {
         "schemas": {
             "uuid": {
-                "description": "A unique identififer for the uploaded file.",
+                "description": "A unique identififer for a model.",
                 "type": "char"
             }
         }

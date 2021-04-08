@@ -84,8 +84,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return ucfirst($this->first_name) . ' ' . ucfirst($this->last_name);
     }
+
     public function teammates()
     {
         return $this->where('company_id', '=', Auth::user()->company_id)->get();
+    }
+
+    public static function byUuid($uuid)
+    {
+        return self::where('uuid', $uuid)->first();
     }
 }

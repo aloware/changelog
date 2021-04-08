@@ -18,7 +18,7 @@
                         <font-awesome-icon :icon="['fas', 'user-check']" v-if="invitationLinkButtonIndexClicked !== index"/>
                         Resend Invitation Link
                     </b-button>
-                    <b-button variant="danger" size="sm" v-on:click="removeUser(user, index)" :disabled="deletionInProgress && deleteButtonIndexClicked === index" v-if="users.length > 1">
+                    <b-button variant="danger" size="sm" v-on:click="removeUser(user, index)" :disabled="deletionInProgress && deleteButtonIndexClicked === index" v-if="user.id !== auth_user.id">
                         <b-spinner small v-if="deletionInProgress && deleteButtonIndexClicked === index"></b-spinner>
                         <font-awesome-icon :icon="['fas', 'trash']" v-if="deleteButtonIndexClicked !== index"/>
                         Delete
@@ -39,7 +39,8 @@ export default {
     name: "team-list",
     mixins: [error_handling_mixin],
     props : {
-        user_data : Array
+        users_data : Array,
+        auth_user : Object
     },
     computed :{
         ...mapGetters(['users']),
@@ -57,9 +58,6 @@ export default {
         addUser : function(){
             this.$bvModal.show('user-form-modal')
         },
-        editUser : function(user){
-
-        },
         removeUser : function(user, index){
             this.$confirm({
                 message : 'Are you sure you want to delete this user?',
@@ -72,7 +70,16 @@ export default {
                         this.deleteButtonIndexClicked = index
                         this.deletionInProgress = !0
                         this.deleteUser(user).then(response => {
-                            this.deletionInProgress = false;
+                            if (response.status === 200 && response.data.status === 'success') {
+                                this.$toastr.s("Success", response.data.message);
+                            } else {
+                                this.$toastr.e("Error", response.data.message);
+                            }
+
+                        }).catch(error => {
+                            this.handleSubmissionFailure(error);
+                        }).then(res => {
+                            this.deletionInProgress = !1;
                         });
                     }
                 }
@@ -93,10 +100,16 @@ export default {
             }).then(res => {
                 this.invitationLinkSendingInProgress = !1;
             });
+        },
+        getUsers : function(){
+            changelogApi.user.index().then(response => {
+               // TODO use this to refresh list of users - if there's a need
+            });
         }
     },
     mounted : function(){
-        this.$store.commit('setUsers', this.user_data);
+        this.$store.commit('setUsers', this.users_data);
+        this.$store.commit('setAuthUser', this.auth_user);
     }
 }
 </script>

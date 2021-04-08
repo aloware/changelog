@@ -81,8 +81,7 @@ class ChangelogController extends Controller
     {
         $project = Project::where('uuid', $projectUuid)->first();
         $changelog = $this->addChangelog($request->validated(), $project->id);
-        //do i really need to requery to attach category and project relationship?
-        return response()->json(['changelog' => Changelog::with('category')->with('project')->where('id', $changelog->id)->first()]);
+        return response()->json(['changelog' => $changelog->load(['category', 'project'])]);
     }
 
     /**

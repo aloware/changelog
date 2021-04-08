@@ -12,7 +12,7 @@ class FileUpload extends Model
 
     protected $guarded = [
         /**
-         * @OA\Schema (schema="uuid", type="char", description="A unique identififer for the uploaded file.")
+         * @OA\Schema (schema="uuid", type="char", description="A unique identififer for a model.")
          *
          */
         //$table->char('uuid', 36);

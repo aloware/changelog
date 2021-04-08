@@ -23,11 +23,19 @@ const state = {
 
     users : [],
     user : {
+        id : '',
+        uuid : '',
         first_name : '',
         last_name : '',
         email : ''
     },
-    auth : {}
+    auth : {
+        id : '',
+        uuid : '',
+        first_name : '',
+        last_name : '',
+        email : ''
+    }
 }
 const getters = {
     categories : (state) => state.categories,
@@ -173,7 +181,8 @@ const actions = {
 
     async deleteUser({commit, state}, user) {
         const response = await changelogApi.user.delete(user.id);
-        if (typeof response !== 'undefined' && response.status === 200) {
+
+        if (typeof response !== 'undefined' && response.status === 200 && response.data.status === 'success') {
             commit('removeUser', user);
         }
 
