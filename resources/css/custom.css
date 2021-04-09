@@ -260,3 +260,7 @@ h2.hr-line-text span {
     margin-top: 5rem;
 }
 
+label,
+legend {
+    color: #6c757d !important;
+}

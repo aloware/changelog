@@ -39,7 +39,7 @@
                     </b-form-invalid-feedback>
                 </b-form-group>
 
-                <b-form-group id="input-group-3" label="Category:" label-for="changelog_category">
+                <b-form-group id="input-group-3" label="Category" label-for="changelog_category">
                     <v-select
                         :options="categories"
                         v-model="$v.changelog.category.$model"

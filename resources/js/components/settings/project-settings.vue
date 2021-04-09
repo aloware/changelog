@@ -13,67 +13,78 @@
         <hr/>
 
         <b-form @submit.stop.prevent="submitForm" class="mb-5">
-            <b-form-group label="Name *">
-                <b-form-input
-                    placeholder="Name of this project"
-                    v-model="project.name"
-                    required
-                ></b-form-input>
-            </b-form-group>
+            <b-row>
+                <b-col :md="(project.id) ? 9 : 12" sm="12">
+                    <b-form-group label="Name *">
+                        <b-form-input
+                            placeholder="Name of this project"
+                            v-model="project.name"
+                            required
+                        ></b-form-input>
+                    </b-form-group>
 
-            <b-form-group label="URL *" description="e.g. http://www.your-domain.com">
-                <b-form-input
-                    placeholder="URL of this project"
-                    v-model="project.url"
-                    required
-                ></b-form-input>
-            </b-form-group>
+                    <b-form-group label="URL *" description="e.g. http://www.your-domain.com">
+                        <b-form-input
+                            placeholder="URL of this project"
+                            v-model="project.url"
+                            required
+                        ></b-form-input>
+                    </b-form-group>
 
-            <b-form-group label="Logo" v-if="project.id">
-                <b-card
-                    v-bind:img-src="projectLogo"
-                    img-alt="Logo"
-                    img-top
-                    tag="article"
-                    style="max-width: 20rem;"
-                    class="mb-2 text-center"
-                >
-                    <avatar-cropper
-                        @uploading="handleUploading"
-                        @uploaded="handleUploaded"
-                        @completed="handleCompleted"
-                        @error="handlerError"
-                        trigger="#pick-avatar"
-                        v-bind:upload-url="'/project/' + project.uuid + '/logo'"
-                        :labels="{submit: 'Upload', cancel: 'Cancel'}"
-                        v-bind:withCredentials="true"
-                    />
+                    <div v-if="project.id">
+                        <b-form-group label="Project UUID">
+                            <b-input-group>
+                                <b-form-input
+                                    name="uuid"
+                                    v-model="project.uuid"
+                                    placeholder="Your project uuid"
+                                    disabled
+                                ></b-form-input>
+                                <b-input-group-append>
+                                    <b-button variant="info"
+                                              v-clipboard:copy="project.uuid"
+                                              v-clipboard:success="onUuidCopy"
+                                              v-clipboard:error="onUuidCopyError"
+                                    ><font-awesome-icon :icon="['far', 'copy']" /></b-button>
+                                </b-input-group-append>
+                            </b-input-group>
+                        </b-form-group>
+                    </div>
+                </b-col>
+                <b-col md="3" sm="12">
+                    <b-form-group label="Logo" v-if="project.id">
+                        <b-img
+                            :src="projectLogo"
+                            alt="Logo"
+                            rounded="circle"
+                            class="project-logo"
+                            fluid
+                            width="200"
+                            height="200"
+                        >
 
-                    <button class="btn btn-primary btn-sm" id="pick-avatar" :disabled="uploadingLogo">
-                        {{ uploadingLogo ? 'Uploading...' : 'Select a new image' }}
-                    </button>
-                </b-card>
-            </b-form-group>
+                        </b-img>
+                            <avatar-cropper
+                                @uploading="handleUploading"
+                                @uploaded="handleUploaded"
+                                @completed="handleCompleted"
+                                @error="handlerError"
+                                trigger="#pick-avatar"
+                                v-bind:upload-url="'/project/' + project.uuid + '/logo'"
+                                :output-options="{ width : 200, height : 200, maxWidth : 200, maxHeight : 200 }"
+                                :labels="{submit: 'Upload', cancel: 'Cancel'}"
+                                v-bind:withCredentials="true"
+                            />
+
+                            <button class="btn btn-primary btn-sm" id="pick-avatar" :disabled="uploadingLogo">
+                                <font-awesome-icon :icon="['fas', 'folder-open']" v-if="!uploadingLogo" />
+                                <b-spinner small v-if="uploadingLogo" ></b-spinner>
+                            </button>
+                    </b-form-group>
+                </b-col>
+            </b-row>
 
             <div v-if="project.id">
-                <b-form-group label="Project UUID">
-                    <b-input-group>
-                        <b-form-input
-                            name="uuid"
-                            v-model="project.uuid"
-                            placeholder="Your project uuid"
-                            disabled
-                        ></b-form-input>
-                        <b-input-group-append>
-                            <b-button variant="info"
-                              v-clipboard:copy="project.uuid"
-                              v-clipboard:success="onUuidCopy"
-                              v-clipboard:error="onUuidCopyError"
-                            ><font-awesome-icon :icon="['far', 'copy']" /></b-button>
-                        </b-input-group-append>
-                    </b-input-group>
-                </b-form-group>
-
                 <h6 class="mt-5 text-muted">Public Page</h6>
                 <hr/>
 
@@ -288,5 +299,17 @@ export default {
     }
     div.heading-title {
         margin-top: 6px;
+    }
+
+    button#pick-avatar {
+        position: absolute;
+        left: 174px;
+        top: 180px;
+        border-radius: 50px;
+    }
+
+    .project-logo {
+        border-radius: 50% !important;
+        border: 1px solid #ced4da;
     }
 </style>
