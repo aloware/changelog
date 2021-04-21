@@ -198,7 +198,7 @@ iframe.cl-frame {
 }
 
 .changelogs-container {
-    height: 82vh;
+    height: 379px;
     overflow-y: auto;
     overflow-x: hidden;
     padding: 10px;
