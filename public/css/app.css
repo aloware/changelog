@@ -127,12 +127,12 @@ body {
 }
 
 .changelogs-container.scrollable {
-    max-height: 82vh;
+    max-height: 379px;
     height: auto !important;
 }
 
 .changelogs-container {
-    height: 82vh;
+    height: 379px;
     overflow-y: auto;
     overflow-x: hidden;
     padding: 10px;
