@@ -83,19 +83,18 @@ ChangelogWidget.prototype.createElements = function(){
         }
 
         this.elements.placeholderContainer.addEventListener("click", this.toggleWidgetDisplay.bind(_this), !1);
-    }
-    if (this.elements.trigger) {
-         this.toggleTriggerDisplay();
-        if (typeof this.elements.trigger !== 'undefined') {
-            _this.elements.trigger.addEventListener("click", this.toggleWidgetDisplay.bind(_this), !1);
-        }
+        window.addEventListener('resize', function(){
+            _this.setWidgetPosition(_this.elements.placeholderContainer);
+        });
     }
 
-    document.addEventListener('click', function(e){
-        if (!_this.iframeContainer.contains(e.target)) {
-            _this.hideWidget();
-        }
-    });
+    this.toggleTriggerDisplay();
+    if (typeof this.elements.trigger !== 'undefined') {
+        _this.elements.trigger.addEventListener("mousedown", this.toggleWidgetDisplay.bind(_this), !1);
+        window.addEventListener('resize', function(){
+            _this.setWidgetPosition(_this.elements.trigger);
+        });
+    }
 
     if (this.options.useIframe) {
         t = document.createElement("style");
@@ -111,6 +110,13 @@ ChangelogWidget.prototype.createElements = function(){
         document.getElementsByTagName("head")[0].appendChild(fileRef)
         this.getChangelogs();
     }
+
+    document.addEventListener('mousedown', function(e){
+        if (_this.iframeContainer && !_this.iframeContainer.contains(e.target)) {
+            _this.hideWidget();
+        }
+        e.stopImmediatePropagation();
+    });
 }
 
 ChangelogWidget.prototype.getChangelogs = function(){
@@ -210,42 +216,62 @@ ChangelogWidget.prototype.toggleWidgetDisplay = function(e){
     if (this.isVisible) {
         this.hideWidget()
     } else {
+        if (e.target.closest('.nav-item')) {
+            e.target.closest('.nav-item').click();
+        }
         this.showWidget(e)
     }
+
     e.stopImmediatePropagation();
 }
 
 ChangelogWidget.prototype.hideWidget = function(){
-    this.iframeContainer.classList.remove("cl-widget-visible");
+    if (this.iframeContainer) {
+        this.iframeContainer.classList.remove("cl-widget-visible");
+    }
     this.isVisible = false;
 }
 
 ChangelogWidget.prototype.showWidget = function(ownerElement){
     this.setWidgetPosition(ownerElement);
-    this.iframeContainer.classList.add("cl-widget-visible");
+    if (this.iframeContainer) {
+        this.iframeContainer.classList.add("cl-widget-visible");
+    }
     this.isVisible = true;
 }
 
 ChangelogWidget.prototype.setWidgetPosition = function(ownerElement){
     let top;
-    let clientRects = ownerElement.target.getBoundingClientRect();
+    let clientRects = (ownerElement.target) ? ownerElement.target.getBoundingClientRect() : ownerElement.getBoundingClientRect();
+    let containerOffsetHeight = 0;
+    let containerOffsetWidth = 0;
+
+    if (this.iframeContainer) {
+        containerOffsetHeight = this.iframeContainer.offsetHeight;
+        containerOffsetWidth = this.iframeContainer.offsetWidth;
+    }
     //set alignment
     switch (this.options.position.alignment) {
         case 'right':
             let offsetRight = this.options.position.offsetRight ? parseInt(this.options.position.offsetRight) : 0;
-            let pos = ((clientRects.left - this.iframeContainer.offsetWidth) + clientRects.width) + offsetRight;
-            this.iframeContainer.style.left = pos + 'px';
+            let pos = ((clientRects.left - containerOffsetWidth) + clientRects.width) + offsetRight;
+            if (this.iframeContainer) {
+                this.iframeContainer.style.left = pos + 'px';
+            }
+
             break;
         case 'left':
         default:
             let offsetLeft = this.options.position.offsetLeft ? parseInt(this.options.position.offsetLeft) : 0;
-            this.iframeContainer.style.left = ((clientRects.left + 2) + offsetLeft) + 'px';
+            if (this.iframeContainer) {
+                this.iframeContainer.style.left = ((clientRects.left + 2) + offsetLeft) + 'px';
+            }
     }
 
     //set drop
     switch (this.options.position.drop) {
         case 'up':
-            top = clientRects.top - this.iframeContainer.offsetHeight;
+            top = clientRects.top - containerOffsetHeight;
             break;
         case 'down':
         default:
@@ -253,7 +279,9 @@ ChangelogWidget.prototype.setWidgetPosition = function(ownerElement){
 
     }
     let offsetTop = this.options.position.offsetTop ? parseInt(this.options.position.offsetTop) : 0;
-    this.iframeContainer.style.top = (top + offsetTop) + 'px';
+    if (this.iframeContainer) {
+        this.iframeContainer.style.top = (top + offsetTop) + 'px';
+    }
 }
 
 ChangelogWidget.prototype.getFormattedTime = function(time) {
@@ -281,7 +309,9 @@ ChangelogWidget.prototype.updateTime = function(){
 }
 
 ChangelogWidget.prototype.toggleTriggerDisplay = function() {
-    this.elements.trigger.style.display = (this.elements.trigger.style.visibility === 'visible') ? 'hidden' : 'visible';
+    if (this.elements.trigger) {
+        this.elements.trigger.style.display = (this.elements.trigger.style.visibility === 'visible') ? 'hidden' : 'visible';
+    }
 }
 
 ChangelogWidget.prototype.fixDurationHumanize = function(dt){

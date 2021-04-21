@@ -21,7 +21,8 @@
     top: -900em;
     z-index: 2147483647;
     width: 340px;
-    max-height: 455px; height: auto;
+    max-height: 455px;
+    height: auto;
     opacity: 0;
     will-change: height, margin-top, opacity;
     margin-top: -10px;
@@ -193,8 +194,8 @@ iframe.cl-frame {
 }
 
 .changelogs-container.changelog-scrollable {
-    max-height: 42vh;height:
-    auto !important;
+    max-height: 379px;
+    height: auto !important;
 }
 
 .changelogs-container {
