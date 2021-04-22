@@ -27,6 +27,16 @@
                     <span v-if="gettingNextPage" class="text-muted"><b-spinner></b-spinner> <br/>Working on previous changelogs...</span>
                     <a href="#" @click="nextPage" class="pt-5 pb-5 text-muted" v-if="!gettingNextPage">Show previous changelogs</a>
                 </div>
+
+                <div class="col-12" v-if="changelogs.length < 1 && !showOverlay">
+                    <b-alert show variant="info">
+                        <p>
+                            No changelog available as of the moment. Meanwhile, you can visit our website for more information.
+                        </p>
+                        <hr>
+                        <b-button variant="primary" :href="getJsonParsedProject.url">Take me to the website</b-button>
+                    </b-alert>
+                </div>
             </div>
             <template #overlay>
                 <div class="text-center">
