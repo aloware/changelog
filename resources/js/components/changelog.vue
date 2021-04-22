@@ -3,12 +3,12 @@
         <div class="badge-container">
             <div>
                 <h4 class="card-title mb-0 changelog-title">{{ changelog.title || 'Title' }} </h4>
-                <b-badge v-bind:style="{ backgroundColor : changelog.category.bg_color, color : changelog.category.text_color }">{{ changelog.category.label }}</b-badge>
+                <small class="text-muted changelog-date">
+                    <span> {{ getInfoText }} </span>
+                    <relative-time-component :from_time="changelog.created_at" :humanized="true" v-if="changelog.created_at"></relative-time-component>
+                </small>
             </div>
-            <small class="text-muted changelog-date">
-                <span> {{ getInfoText }} </span>
-                <relative-time-component :from_time="changelog.created_at" :humanized="true" v-if="changelog.created_at"></relative-time-component>
-            </small>
+            <b-badge v-bind:style="{ backgroundColor : changelog.category.bg_color, color : changelog.category.text_color }">{{ changelog.category.label }}</b-badge>
         </div>
 
         <p v-html="changelog.body || 'Content'" class="mt-2 changelog-body"></p>
@@ -102,6 +102,10 @@
     .badge-container {
         display: flex;
         justify-content: space-between;
+    }
+
+    .badge-container .badge {
+        height: 20px !important;
     }
 
 

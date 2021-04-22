@@ -12,13 +12,11 @@
                         <div class="badge-container">
                             <div>
                                 <h4 class="changelog-title mb-0">{{ changelog.title }}</h4>
-                                <b-badge v-bind:style="{ backgroundColor : changelog.category.bg_color, color : changelog.category.text_color }">{{ changelog.category.label }}</b-badge>
+                                <small class="text-muted">
+                                    <relative-time-component class="inline-date changelog-date" :from_time="changelog.created_at" :humanized="true" :update_interval="60000"></relative-time-component>
+                                </small>
                             </div>
-
-                            <small class="text-muted">
-                                <font-awesome-icon class="changelog-clock-icon" :icon="['far', 'clock']" />
-                                <relative-time-component class="inline-date changelog-date" :from_time="changelog.created_at" :humanized="true" :update_interval="60000"></relative-time-component>
-                            </small>
+                            <b-badge v-bind:style="{ backgroundColor : changelog.category.bg_color, color : changelog.category.text_color }">{{ changelog.category.label }}</b-badge>
                         </div>
 
                         <div class="changelog-body" v-html="changelog.body"></div>
@@ -155,5 +153,9 @@ export default {
 
     .changelog-clock-icon {
         margin-right: 3px;
+    }
+
+    .changelogs-container .badge {
+        height: 20px !important;
     }
 </style>

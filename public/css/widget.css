@@ -318,10 +318,15 @@ span.widget-badge {
 
 .cl-widget-container .changelog-title {
     color: #212529;
+    max-width: 90%;
 }
 
 .cl-widget-container .changelog-clock-icon {
     margin-right: 3px;
+}
+
+.cl-widget-container .badge {
+    height: 20px !important;
 }
 
 
