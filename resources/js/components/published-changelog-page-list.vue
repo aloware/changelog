@@ -10,14 +10,17 @@
                     <div class="col-12 changelog-list">
 
                         <div class="badge-container">
-                            <b-badge v-bind:style="{ backgroundColor : changelog.category.bg_color, color : changelog.category.text_color }">{{ changelog.category.label }}</b-badge>
+                            <div>
+                                <h4 class="changelog-title mb-0">{{ changelog.title }}</h4>
+                                <b-badge v-bind:style="{ backgroundColor : changelog.category.bg_color, color : changelog.category.text_color }">{{ changelog.category.label }}</b-badge>
+                            </div>
+
                             <small class="text-muted">
-                                <font-awesome-icon :icon="['far', 'clock']" />
+                                <font-awesome-icon class="changelog-clock-icon" :icon="['far', 'clock']" />
                                 <relative-time-component class="inline-date changelog-date" :from_time="changelog.created_at" :humanized="true" :update_interval="60000"></relative-time-component>
                             </small>
                         </div>
 
-                        <span class="changelog-title">{{ changelog.title }}</span>
                         <div class="changelog-body" v-html="changelog.body"></div>
                     </div>
                     <h2 class="hr-line-text"><span></span></h2>
@@ -134,7 +137,7 @@ export default {
     .badge-container {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 5px!important;
+        margin-bottom: 0.5rem !important;
     }
 
     .changelog-list {
@@ -148,5 +151,9 @@ export default {
 
     .page-list-container {
         width: 100%;
+    }
+
+    .changelog-clock-icon {
+        margin-right: 3px;
     }
 </style>

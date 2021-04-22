@@ -1,15 +1,16 @@
 <template>
     <b-card>
         <div class="badge-container">
-            <b-badge v-bind:style="{ backgroundColor : changelog.category.bg_color, color : changelog.category.text_color }">{{ changelog.category.label }}</b-badge>
+            <div>
+                <h4 class="card-title mb-0 changelog-title">{{ changelog.title || 'Title' }} </h4>
+                <b-badge v-bind:style="{ backgroundColor : changelog.category.bg_color, color : changelog.category.text_color }">{{ changelog.category.label }}</b-badge>
+            </div>
             <small class="text-muted changelog-date">
-
                 <span> {{ getInfoText }} </span>
                 <relative-time-component :from_time="changelog.created_at" :humanized="true" v-if="changelog.created_at"></relative-time-component>
             </small>
         </div>
 
-        <h4 data-v-5573eef4="" class="card-title mt-2 changelog-title">{{ changelog.title || 'Title' }} </h4>
         <p v-html="changelog.body || 'Content'" class="mt-2 changelog-body"></p>
 
         <div class="footer-container" v-if="!showChangelogEditor">

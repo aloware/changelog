@@ -320,6 +320,9 @@ span.widget-badge {
     color: #212529;
 }
 
+.cl-widget-container .changelog-clock-icon {
+    margin-right: 3px;
+}
 
 
 
