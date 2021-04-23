@@ -113,7 +113,7 @@ ChangelogWidget.prototype.createElements = function(){
     }
 
     document.addEventListener('mousedown', function(e){
-        if (_this.iframeContainer && !_this.iframeContainer.contains(e.target)) {
+        if (_this.iframeContainer && !_this.iframeContainer.contains(e.target) && e.button === 0) {
             _this.hideWidget();
         }
         e.stopImmediatePropagation();
@@ -217,6 +217,10 @@ ChangelogWidget.prototype.onFrameLoad = function(e){
 }
 
 ChangelogWidget.prototype.toggleWidgetDisplay = function(e){
+    if (e.button !== 0) {
+        return
+    }
+
     if (this.isVisible) {
         this.hideWidget()
     } else {
